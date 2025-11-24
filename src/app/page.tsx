@@ -38,7 +38,9 @@ const HomePage = () => {
         {/* Landing Page */}
         <section className="h-screen w-full relative z-20">
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-green-700"></div>
-          <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-10"></div>
+          <div className="absolute inset-0 opacity-10">
+  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white to-transparent"></div>
+</div>
           <div className="absolute flex flex-col gap-5 text-stone-100
                           justify-center items-center text-center inset-5 sm:inset-10 md:inset-15 lg:inset-20">
             <FontAwesomeIcon icon={faRecycle} className="text-8xl md:text-9xl mb-5 animate-pulse" />

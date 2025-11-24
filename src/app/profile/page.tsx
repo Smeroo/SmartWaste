@@ -1,463 +1,240 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faArrowUpRightFromSquare, faTrashCan, faUser, faSpinner, faUserPen, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
-import { toast } from 'react-toastify';
-import CreateSpaceModal from '@/components/CreateSpaceModal';
-import EditSpaceModal from '@/components/EditSpaceModal';
-import EditProfileModal from '@/components/EditProfileModal';
+import { 
+  faUser, 
+  faEnvelope, 
+  faCalendar, 
+  faSignOutAlt, 
+  faLeaf,
+  faMapMarkerAlt,
+  faBell,
+  faEdit
+} from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 
-export default function Profile() {
-    // State variables for modals
-    const [isCreateSpaceModalOpen, setCreateSpaceModalOpen] = useState(false); // Controls the visibility of the Create CollectionPoint modal
-    const [isEditSpaceModalOpen, setEditSpaceModalOpen] = useState(false); // Controls the visibility of the Edit CollectionPoint modal
-    const [isEditProfileModalOpen, setEditProfileModalOpen] = useState(false); // Controls the visibility of the Edit Profile modal
-    // State variables for user data
-    const [isLoading, setIsLoading] = useState(true); // Indicates if user data is being loaded
-    const [selectedSpace, setSelectedSpace] = useState<string>(""); // Stores the ID of the selected collectionPoint for editing
-    const [userEmail, setUserEmail] = useState(""); // Stores the user's email
-    const [userRole, setUserRole] = useState(""); // Stores the user's role (CLIENT or AGENCY)
-    const [user, setClient] = useState({
-        name: 'Name',
-        surname: 'Surname',
-        cellphone: 'Cellphone',
-        visits: [],
-    }); // Stores user-specific data
-    const [operator, setAgency] = useState({
-        userId: '',
-        name: 'Operator Name',
-        vatNumber: 'VAT Number',
-        telephone: 'Telephone',
-        collectionPoints: [],
-    }); // Stores operator-specific data
+interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  createdAt: string;
+}
 
-    // Fetch user data from the API
-    const fetchUserData = useCallback(async () => {
-        try {
-            const response = await fetch('/api/profile'); // Fetch profile data from the API
-            const data = await response.json(); // Parse the response as JSON
-            setUserEmail(data.email); // Set the user's email
-            setUserRole(data.role); // Set the user's role
-            if (data.role === "CLIENT") {
-                setClient(data.user); // Set user data if user is a user
-            }
-            else if (data.role === 'AGENCY') {
-                setAgency(data.operator); // Set operator data if user is an operator
-            }
-        }
-        catch (error) {
-            console.error('Error fetching user data:', error); // Log any errors
-            return null;
-        }
-        finally {
-            setIsLoading(false); // Set loading to false after fetching
-        }
-    }, []);
+const ProfilePage = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
 
-    // Handle visit deletion
-    const handleBookingDelete = async (bookingId: string) => {
-        try {
-            const response = await fetch(`/api/visits/${bookingId}`, {
-                method: 'DELETE', // Send a DELETE request to remove the visit
-            });
-            if (!response.ok) {
-                throw new Error('Failed to delete visit'); // Throw error if deletion fails
-            }
-            // Optionally, refresh the visits after deletion
-            await fetchUserData(); // Refresh user data after deletion
-            toast.success('Visit deleted successfully!'); // Show success message
-        } catch (error) {
-            console.error('Error deleting visit:', error); // Log any errors
-            toast.error('Failed to delete visit. Please try again.'); // Show error message
-        }
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
     }
+  }, [status, router]);
 
-    // Handle collectionPoint deletion
-    const handleSpaceDelete = async (spaceId: string) => {
-        try {
-            const response = await fetch(`/api/collectionPoints/${spaceId}`, {
-                method: 'DELETE', // Send a DELETE request to remove the collectionPoint
-            });
-            if (!response.ok) {
-                throw new Error('Failed to delete collectionPoint'); // Throw error if deletion fails
-            }
-            // Optionally, refresh the collectionPoints after deletion
-            await fetchUserData(); // Refresh user data after deletion
-            toast.success('CollectionPoint deleted successfully!'); // Show success message
-        } catch (error) {
-            console.error('Error deleting collectionPoint:', error); // Log any errors
-            toast.error('Failed to delete collectionPoint. Please try again.'); // Show error message
-        }
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch('/api/profile');
+        const data = await response.json();
+        setProfile(data);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (status === 'authenticated') {
+      fetchProfile();
     }
+  }, [status]);
 
-    useEffect(() => {
-        fetchUserData();
-    }, [fetchUserData]);
+  const handleLogout = () => {
+    signOut({ callbackUrl: '/' });
+  };
 
-    if (isLoading) return (
-        <div className="h-screen text-6xl flex justify-center items-center text-stone-600">
-            <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
-        </div>
-    );
-
-    // Lock scroll if any modal is open
-    if (isCreateSpaceModalOpen || isEditProfileModalOpen || isEditSpaceModalOpen) {
-        document.body.style.overflow = 'hidden';
-    } else {
-        document.body.style.overflow = 'auto';
-    }
-
+  if (loading || status === 'loading') {
     return (
-        <div id='profile' className={`px-5 sm:px-10 md:px-15 lg:px-20`}>
-            <section className={`w-full min-h-screen pt-28`}>
-                {/* Profile Wrapper */}
-                <div className={`w-full h-full flex flex-col gap-5`}>
-                    {/* Top Section */}
-                    <div className={`w-full h-full p-5 flex flex-col gap-5 rounded-2xl bg-stone-100 border-1 border-stone-900/10 shadow-sm overflow-hidden
-                                    md:grid ${userRole === 'AGENCY' ? 'md:grid-cols-8 lg:grid-cols-9' : 'md:grid-cols-7'}`}>
-                        {/* Column 1: Profile picture, name and surname */}
-                        <div className="flex items-center col-span-2 md:col-span-3 lg:col-span-2 gap-3">
-                            <div className="aspect-square w-24 h-24 rounded-lg border-8 border-stone-300 flex items-center justify-center">
-                                <FontAwesomeIcon icon={faUser} className="text-stone-600 w-2/3 h-2/3 text-[5rem]" />
-                            </div>
-                            <h1 className="text-2xl font-bold text-stone-800">
-                                {userRole === 'AGENCY' ? operator.name : `${user?.name} ${user?.surname}`}
-                            </h1>
-                        </div>
-                        {/* Columns 2 and 3: Email and Cellphone (stacked on md and up) */}
-                        <div className={`flex flex-col sm:flex-row md:flex-col lg:flex-row col-span-4  ${userRole === 'AGENCY' ? 'md:col-span-4 lg:col-span-6' : 'md:col-span-3 lg:col-span-4'} gap-3 sm:gap-10 md:gap-3 lg:gap-0 justify-center items-center`}>
-                            {/* Email */}
-                            <div className="flex flex-col justify-center items-center gap-1 w-full">
-                                <p className="text-sm font-bold w-full lg:w-auto">Email</p>
-                                <p className="text-stone-600 break-all w-full lg:w-auto">{userEmail}</p>
-                            </div>
-                            <div className='flex w-full'>
-                                {/* Cellphone / Telephone */}
-                                <div className="flex flex-col justify-center items-center gap-1 w-full">
-                                    <p className="text-sm font-bold w-full lg:w-auto">{userRole === 'AGENCY' ? "Telephone" : "Cellphone"}</p>
-                                    <p className="text-stone-600 break-all w-full lg:w-auto">
-                                        {userRole === 'AGENCY' ? operator.telephone : user?.cellphone}
-                                    </p>
-                                </div>
-                                {/* VAT (only for AGENCY) */}
-                                {userRole === 'AGENCY' && (
-                                    <div className="flex flex-col justify-center items-center gap-1 w-full">
-                                        <p className="text-sm font-bold w-full lg:w-auto">VAT</p>
-                                        <p className="text-stone-600 break-all w-full lg:w-auto">{operator.vatNumber}</p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                        {/* Column 4: Empty */}
-                        <div className={`flex md:flex-col items-end text-stone-100 ${userRole === 'AGENCY' ? 'justify-between' : 'justify-end'}`}>
-                            {/* Edit Profile Button */}
-                            <button onClick={() => setEditProfileModalOpen(true)}
-                                className='flex justify-start md:justify-end items-center rounded-lg ring-2 ring-stone-900/10 bg-stone-100 hover:bg-stone-900 active:bg-stone-900 text-stone-900 hover:text-stone-100 active:text-stone-100 shadow-sm transition-all duration-150 overflow-hidden
-                                           w-10 hover:w-37 active:w-37 ease-out active:scale-90 hover:scale-110 origin-left md:origin-right group'>
-                                <p className='order-2 md:order-1 whitespace-nowrap text-xl text-start md:text-end w-full opacity-0 group-hover:opacity-100 group-active:opacity-100
-                                                duration-150'>Edit profile</p>
-                                <div className='order-1 md:order-2 aspect-square bg-stone-100 group-hover:bg-stone-900 group-active:bg-stone-900 size-10 text-xl rounded-lg flex items-center justify-center
-                                                duration-150'>
-                                    <FontAwesomeIcon icon={faUserPen} />
-                                </div>
-                            </button>
-                            {/* Publish CollectionPoint Button (only for AGENCY) */}
-                            {userRole === 'AGENCY' && (
-                                <button onClick={() => setCreateSpaceModalOpen(true)}
-                                    className='flex justify-end items-center rounded-lg ring-2 ring-west-side-500 bg-stone-100 hover:bg-west-side-500 active:bg-west-side-500 text-west-side-500 hover:text-stone-100 active:text-stone-100 shadow-sm transition-all duration-150 overflow-hidden
-                                               w-10 hover:w-43 active:w-43 ease-out active:scale-90 hover:scale-110 origin-right group'>
-                                    <p className='whitespace-nowrap text-xl text-end w-full opacity-0 group-hover:opacity-100 group-active:opacity-100
-                                                    duration-150'>Publish collectionPoint</p>
-                                    <div className='aspect-square bg-stone-100 group-hover:bg-west-side-500 group-active:bg-west-side-500 size-10 text-2xl rounded-lg flex items-center justify-center
-                                                    duration-150'>
-                                        <FontAwesomeIcon icon={faPlus} />
-                                    </div>
-                                </button>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Bottom Section */}
-                    <div className={`w-full h-full gap-5 rounded-2xl bg-stone-100 border-1 border-stone-900/10 shadow-sm overflow-hidden`}>
-                        <div className="grid gap-4 p-5 h-full
-                                        grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-
-                            {userRole === 'CLIENT' && user.visits && user.visits.length > 0 ? (
-                                [...user.visits]
-                                    .sort((a: any, b: any) => new Date(a.bookingDate).getTime() - new Date(b.bookingDate).getTime())
-                                    .map((visit: any, index: number) => (
-                                        <div
-                                            key={index}
-                                            className="p-2 rounded-lg shadow-sm hover:shadow-md border-1 border-stone-900/10 bg-stone-100 transition-shadow flex flex-col justify-between gap-5 h-fit">
-                                            <div>
-                                                <h2 className="text-xl font-semibold text-stone-800">{visit.collectionPoint?.name}</h2>
-                                                <p className="text-sm text-stone-600">{visit.collectionPoint?.address?.city}, {visit.collectionPoint?.address?.country}</p>
-                                            </div>
-                                            <div className={`flex gap-2 justify-between`}>
-                                                <button className="aspect-square flex justify-center items-center size-8 text-sm border-1 border-stone-900/10 bg-stone-100 hover:bg-red-500 active:bg-red-500 hover:text-stone-100 active:text-stone-100 transition rounded-sm shadow-sm"
-                                                    onClick={() => handleBookingDelete(visit.id)}>
-                                                    <FontAwesomeIcon icon={faTrashCan} />
-                                                </button>
-                                                <div className='px-2 h-8 flex justify-center items-center rounded-sm font-bold text-center overflow-hidden bg-west-side-200 border-1 border-west-side-300 text-west-side-900'>
-                                                    {new Date(visit.bookingDate).toLocaleDateString('en-GB', {
-                                                        day: '2-digit',
-                                                        month: '2-digit',
-                                                        year: 'numeric'
-                                                    })}
-                                                </div>
-                                                <Link href={`/collectionPoints/${visit.collectionPoint.id}`}>
-                                                    <button className="aspect-square flex justify-center items-center size-8 text-sm border-1 border-stone-900/10 bg-stone-100 hover:bg-stone-900 active:bg-stone-900 hover:text-stone-100 active:text-stone-100 transition rounded-sm shadow-sm">
-                                                        <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
-                                                    </button>
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    ))
-                            ) : userRole === 'AGENCY' && operator.collectionPoints && operator.collectionPoints.length > 0 ? (
-                                operator.collectionPoints.map((collectionPoint: any, index: number) => (
-                                    <div
-                                        key={index}
-                                        className="p-2 rounded-lg shadow-sm hover:shadow-md border-1 border-stone-900/10 bg-stone-100 transition-shadow flex flex-col justify-between gap-5 h-fit">
-                                        <div>
-                                            <h2 className="text-xl font-semibold text-stone-800">{collectionPoint.name}</h2>
-                                            <p className="text-sm text-stone-600">{collectionPoint.address?.city}, {collectionPoint.address?.country}</p>
-                                        </div>
-                                        <div className="flex justify-between items-end">
-                                            <button className="aspect-square flex justify-center items-center size-8 text-sm border-1 border-stone-900/10 bg-stone-100 hover:bg-red-500 active:bg-red-500 hover:text-stone-100 active:text-stone-100 transition rounded-sm shadow-sm"
-                                                onClick={() => handleSpaceDelete(collectionPoint.id)}>
-                                                <FontAwesomeIcon icon={faTrashCan} />
-                                            </button>
-                                            <div className='flex gap-2'>
-                                                <button onClick={() => {
-                                                    setEditSpaceModalOpen(true);
-                                                    setSelectedSpace(collectionPoint.id);
-                                                }}
-                                                    className="aspect-square flex justify-center items-center size-8 text-sm border-1 border-stone-900/10 bg-stone-100 hover:bg-stone-900 active:bg-stone-900 hover:text-stone-100 active:text-stone-100 transition rounded-sm shadow-sm">
-                                                    <FontAwesomeIcon icon={faPenToSquare} />
-                                                </button>
-                                                <Link href={`/collectionPoints/${collectionPoint.id}`}>
-                                                    <button className="aspect-square flex justify-center items-center size-8 text-sm border-1 border-stone-900/10 bg-stone-100 hover:bg-stone-900 active:bg-stone-900 hover:text-stone-100 active:text-stone-100 transition rounded-sm shadow-sm">
-                                                        <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
-                                                    </button>
-                                                </Link>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <p className="text-center text-balance text-stone-600 col-span-full">
-                                    {userRole === 'CLIENT' ? 'No visits found.' : 'No collectionPoints found.'}
-                                </p>
-                            )}
-                        </div>
-                    </div>
-                </div >
-            </section >
-            {/* Modals */}
-            <EditProfileModal
-                isOpen={isEditProfileModalOpen}
-                onClose={() => setEditProfileModalOpen(false)}
-                userData={userRole === 'CLIENT' ? user : operator} // Pass the appropriate user data based on role
-                userRole={userRole}
-                onSubmitComplete={async (status) => {
-                    if (status === 200) {
-                        await fetchUserData(); // Refresh user data after successful submission
-                        toast.success('Profile updated successfully!');
-                    } else
-                        toast.error('Failed to update profile. Please try again.');
-                    setEditProfileModalOpen(false);
-                }}
-            />
-            <CreateSpaceModal
-                isOpen={isCreateSpaceModalOpen}
-                onClose={() => setCreateSpaceModalOpen(false)}
-                userId={operator.userId}
-                onSubmitComplete={async (status) => {
-                    if (status === 201) {
-                        await fetchUserData(); // Refresh collectionPoints after successful submission
-                        toast.success('CollectionPoint created successfully!');
-                    } else
-                        toast.error('Failed to create collectionPoint. Please try again.');
-                    setCreateSpaceModalOpen(false);
-                }}
-            />
-            <EditSpaceModal
-                isOpen={isEditSpaceModalOpen}
-                onClose={() => setEditSpaceModalOpen(false)}
-                userId={operator.userId}
-                spaceId={selectedSpace}
-                onSubmitComplete={async (status) => {
-                    if (status === 200) {
-                        await fetchUserData(); // Refresh collectionPoints after successful submission
-                        toast.success('CollectionPoint updated successfully!');
-                    } else
-                        toast.error('Failed to update collectionPoint. Please try again.');
-                    setEditSpaceModalOpen(false);
-                }}
-            />
-        </div >
+      <div className="min-h-screen flex items-center justify-center pt-28">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-emerald-500"></div>
+          <p className="mt-5 text-xl text-stone-600">Caricamento profilo...</p>
+        </div>
+      </div>
     );
+  }
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen flex items-center justify-center pt-28">
+        <div className="text-center">
+          <p className="text-xl text-red-600">Errore nel caricamento del profilo</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen pt-28 pb-10 px-5 sm:px-10 md:px-15 lg:px-20">
+      {/* Header */}
+      <div className="mb-10">
+        <h1 className="text-4xl md:text-6xl font-bold mb-3">
+          Il Tuo <span className="text-emerald-500">Profilo</span>
+        </h1>
+        <p className="text-xl text-stone-600">
+          Gestisci le tue informazioni e attività
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Colonna Sinistra - Info Profilo */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Card Info Personali */}
+          <div className="bg-stone-100 rounded-3xl p-8 shadow-md">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold flex items-center gap-3">
+                <FontAwesomeIcon icon={faUser} className="text-emerald-500" />
+                Informazioni Personali
+              </h2>
+              <button className="px-4 py-2 bg-emerald-500 text-white rounded-2xl hover:bg-emerald-600 transition">
+                <FontAwesomeIcon icon={faEdit} className="mr-2" />
+                Modifica
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Nome */}
+              <div className="flex items-center gap-4 p-4 bg-white rounded-2xl">
+                <div className="bg-emerald-100 p-3 rounded-full">
+                  <FontAwesomeIcon icon={faUser} className="text-emerald-600 text-xl" />
+                </div>
+                <div>
+                  <p className="text-sm text-stone-500">Nome completo</p>
+                  <p className="text-lg font-semibold text-stone-900">{profile.name}</p>
+                </div>
+              </div>
+
+              {/* Email */}
+              <div className="flex items-center gap-4 p-4 bg-white rounded-2xl">
+                <div className="bg-blue-100 p-3 rounded-full">
+                  <FontAwesomeIcon icon={faEnvelope} className="text-blue-600 text-xl" />
+                </div>
+                <div>
+                  <p className="text-sm text-stone-500">Email</p>
+                  <p className="text-lg font-semibold text-stone-900">{profile.email}</p>
+                </div>
+              </div>
+
+              {/* Ruolo */}
+              <div className="flex items-center gap-4 p-4 bg-white rounded-2xl">
+                <div className="bg-purple-100 p-3 rounded-full">
+                  <FontAwesomeIcon icon={faLeaf} className="text-purple-600 text-xl" />
+                </div>
+                <div>
+                  <p className="text-sm text-stone-500">Ruolo</p>
+                  <p className="text-lg font-semibold text-stone-900">
+                    {profile.role === 'USER' ? 'Cittadino' : 'Operatore'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Data Registrazione */}
+              <div className="flex items-center gap-4 p-4 bg-white rounded-2xl">
+                <div className="bg-yellow-100 p-3 rounded-full">
+                  <FontAwesomeIcon icon={faCalendar} className="text-yellow-600 text-xl" />
+                </div>
+                <div>
+                  <p className="text-sm text-stone-500">Membro dal</p>
+                  <p className="text-lg font-semibold text-stone-900">
+                    {new Date(profile.createdAt).toLocaleDateString('it-IT', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card Statistiche (placeholder) */}
+          <div className="bg-gradient-to-br from-emerald-500 to-green-600 rounded-3xl p-8 shadow-md text-white">
+            <h2 className="text-2xl font-bold mb-6">Le Tue Statistiche</h2>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center">
+                <div className="text-4xl font-bold mb-2">0</div>
+                <p className="text-sm opacity-90">Segnalazioni</p>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl font-bold mb-2">0</div>
+                <p className="text-sm opacity-90">Punti Visitati</p>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl font-bold mb-2">0</div>
+                <p className="text-sm opacity-90">Contributi</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Colonna Destra - Azioni Rapide */}
+        <div className="space-y-6">
+          {/* Card Azioni */}
+          <div className="bg-stone-100 rounded-3xl p-6 shadow-md">
+            <h2 className="text-xl font-bold mb-4">Azioni Rapide</h2>
+            <div className="space-y-3">
+              <Link
+                href="/collection-points"
+                className="flex items-center gap-3 p-4 bg-white rounded-2xl hover:bg-emerald-50 transition group"
+              >
+                <FontAwesomeIcon icon={faMapMarkerAlt} className="text-emerald-500 text-xl group-hover:scale-110 transition" />
+                <span className="font-medium">Trova Punti Raccolta</span>
+              </Link>
+
+              <Link
+                href="/waste-guide"
+                className="flex items-center gap-3 p-4 bg-white rounded-2xl hover:bg-blue-50 transition group"
+              >
+                <FontAwesomeIcon icon={faLeaf} className="text-blue-500 text-xl group-hover:scale-110 transition" />
+                <span className="font-medium">Guida Rifiuti</span>
+              </Link>
+
+              <button className="flex items-center gap-3 p-4 bg-white rounded-2xl hover:bg-yellow-50 transition group w-full text-left">
+                <FontAwesomeIcon icon={faBell} className="text-yellow-500 text-xl group-hover:scale-110 transition" />
+                <span className="font-medium">Notifiche (0)</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Card Logout */}
+          <div className="bg-stone-100 rounded-3xl p-6 shadow-md">
+            <h2 className="text-xl font-bold mb-4">Account</h2>
+            <button
+              onClick={handleLogout}
+              className="flex items-center justify-center gap-3 w-full p-4 bg-red-500 text-white rounded-2xl 
+                       hover:bg-red-600 transition-all duration-300 hover:scale-105 active:scale-95 font-semibold"
+            >
+              <FontAwesomeIcon icon={faSignOutAlt} />
+              Disconnetti
+            </button>
+          </div>
+
+          {/* Card Info */}
+          <div className="bg-emerald-50 border-2 border-emerald-200 rounded-3xl p-6">
+            <h3 className="font-bold text-emerald-900 mb-2">💡 Suggerimento</h3>
+            <p className="text-sm text-emerald-800">
+              Completa il tuo profilo per sbloccare funzionalità esclusive e contribuire alla community!
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
-// Render different content based on user role
-//     if (userRole === 'CLIENT' && user) {
-//         return (
-//             <div id='profile' className={`px-5 sm:px-10 md:px-15 lg:px-20`}>
-//                 <section className={`w-full min-h-screen  lg:h-screen pt-28 pb-3`}>
-//                     {/* Profile Wrapper */}
-//                     <div className={`w-full h-full p-5 flex flex-col lg:flex-row bg-stone-100 rounded-4xl gap-5`}>
-
-//                         {/* Left Section */}
-//                         <div className={`p-3 sm:p-5 xl:p-8 h-full flex flex-col sm:flex-row lg:flex-col gap-5 rounded-2xl border-1 border-stone-900/10 shadow-sm overflow-hidden
-//                                     w-full lg:w-1/5`}>
-//                             {/* Profile Information */}
-//                             <div className="w-full aspect-square max-w-[120px] lg:max-w-full rounded-lg border-8 border-stone-300 flex items-center justify-center lg:mx-auto">
-//                                 <FontAwesomeIcon icon={faUser} className="text-stone-600 w-2/3 h-2/3 text-[5rem] lg:text-[8rem]" />
-//                             </div>
-//                             <div className='flex flex-col gap-3'>
-//                                 <h1 className="text-3xl lg:text-2xl xl:text-3xl font-bold text-stone-800"> {user?.name} {user?.surname} </h1>
-//                                 <p className="text-lg lg:text-base xl:text-lg text-stone-600">{userEmail}</p>
-//                                 <p className="text-lg lg:text-base xl:text-lg text-stone-600">{user?.cellphone}</p>
-//                             </div>
-//                         </div>
-
-//                         {/* Right Section */}
-//                         <div className={`gap-5 h-full rounded-2xl border-1 border-stone-900/10 shadow-sm overflow-hidden
-//                                     w-full lg:w-4/5`}>
-//                             <div className="grid gap-4 p-4 h-full lg:h-full lg:overflow-y-scroll
-//                                         grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-
-//                                 {user.visits && user.visits.length > 0 ? (
-//                                     user.visits?.map((visit: any, index: number) => (
-//                                         <div
-//                                             key={index} // Add a unique key for each child
-//                                             className="p-2 rounded-lg shadow-sm hover:shadow-md border-1 border-stone-900/10 bg-stone-100 transition-shadow flex flex-col justify-between gap-5 h-fit">
-//                                             <div>
-//                                                 <h2 className="text-xl font-semibold text-stone-800">{visit.collectionPoint.name}</h2>
-//                                                 <p className="text-sm text-stone-600">{visit?.collectionPoint.address.city}, {visit?.collectionPoint.address.country}</p>
-//                                             </div>
-//                                             <div className="flex justify-between gap-4">
-//                                                 <div className='aspect-square w-full h-8 flex justify-center items-center rounded-sm font-bold text-sm md:text-xs lg:text-sm text-center overflow-hidden bg-west-side-200 border-1 border-west-side-300 text-west-side-900'>
-//                                                     {new Date(visit.bookingDate).toLocaleDateString('en-GB', {
-//                                                         day: '2-digit',
-//                                                         month: '2-digit',
-//                                                         year: 'numeric'
-//                                                     })}
-//                                                 </div>
-
-//                                                 <div className='flex gap-2 items-end'>
-//                                                     <button className="aspect-square flex justify-center items-center size-8 bg-stone-100 hover:bg-red-500 active:bg-red-500 hover:text-stone-100 active:text-stone-100 transition rounded-lg shadow-sm
-//                                                                 text-sm xl:text-base"
-//                                                         onClick={() => handleBookingDelete(visit.id)}>
-//                                                         <FontAwesomeIcon icon={faTrashCan} />
-//                                                     </button>
-//                                                     <button className="aspect-square flex justify-center items-center size-8 bg-stone-100 hover:bg-stone-900 active:bg-stone-900 hover:text-stone-100 active:text-stone-100 transition rounded-lg shadow-sm
-//                                                                 text-sm xl:text-base"
-//                                                         onClick={() => window.open(`/collectionPoints/${visit.collectionPoint.id}`, '_blank')}>
-//                                                         <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
-//                                                     </button>
-//                                                 </div>
-//                                             </div>
-//                                         </div>
-//                                     ))
-//                                 ) : (
-//                                     <div className="w-full h-full flex items-center justify-center text-stone-600">
-//                                         <p className="text-xl">No visits found.</p>
-//                                     </div>
-//                                 )}
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </section >
-//             </div >
-//         );
-//     }
-//     else if (userRole === 'AGENCY' && operator) {
-//         return (
-//             <div id='profile' className={`px-5 sm:px-10 md:px-15 lg:px-20`}>
-//                 <section className={`w-full min-h-screen  lg:h-screen pt-28 pb-3`}>
-//                     {/* Profile Wrapper */}
-//                     <div className={`w-full h-full p-5 flex flex-col bg-stone-100 rounded-4xl gap-5`}>
-
-//                         {/* Left Section */}
-//                         <div className={`p-3 sm:p-5 xl:p-8 h-full flex flex-col sm:flex-row lg:flex-col gap-5 rounded-2xl border-1 border-stone-900/10 shadow-sm overflow-hidden
-//                                     w-full lg:w-1/5`}>
-//                             {/* Profile Information */}
-//                             <div className="w-full aspect-square max-w-[120px] lg:max-w-full rounded-lg border-8 border-stone-300 flex items-center justify-center lg:mx-auto">
-//                                 <FontAwesomeIcon icon={faUser} className="text-stone-600 w-2/3 h-2/3 text-[5rem] lg:text-[8rem]" />
-//                             </div>
-//                             <div className='flex flex-col gap-3'>
-//                                 <h1 className="text-3xl lg:text-2xl xl:text-3xl font-bold text-stone-800"> {operator?.name}</h1>
-//                                 <p className="text-lg lg:text-base xl:text-lg text-stone-600">{userEmail}</p>
-//                                 <p className="text-lg lg:text-base xl:text-lg text-stone-600">{operator?.vatNumber} {operator?.telephone}</p>
-//                             </div>
-
-//                             {/* Publish CollectionPoint Button */}
-//                             <button
-//                                 onClick={() => setModalOpen(true)}
-//                                 className='mt-auto ml-auto flex justify-end items-center rounded-xl bg-west-side-500 text-stone-100 transition-all duration-150
-//                                            w-12 hover:w-44 active:w-44 ease-out active:scale-90 hover:scale-110 origin-right delay-1000 hover:delay-0 active:delay-0'>
-//                                 <p className='whitespace-nowrap text-xl text-right w-full'>Publish collectionPoint</p>
-//                                 <div className='aspect-square bg-west-side-500 size-12 text-2xl rounded-xl flex items-center justify-center'>
-//                                     <FontAwesomeIcon icon={faPlus} />
-//                                 </div>
-//                             </button>
-//                         </div>
-
-//                         {/* Right Section */}
-//                         <div className={`gap-5 h-full rounded-2xl border-1 border-stone-900/10 shadow-sm overflow-hidden
-//                                     w-full lg:w-4/5`}>
-//                             <div className="grid gap-4 p-4 h-full lg:h-full lg:overflow-y-scroll
-//                                         grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-//                                 {operator.collectionPoints && operator.collectionPoints.length > 0 ? (
-//                                     operator.collectionPoints?.map((collectionPoint: any, index: number) => (
-//                                         <div
-//                                             key={index} // Add a unique key for each child
-//                                             className="p-2 rounded-lg shadow-sm hover:shadow-md border-1 border-stone-900/10 bg-stone-100 transition-shadow flex flex-col justify-between gap-5 h-fit">
-//                                             <div>
-//                                                 <h2 className="text-xl font-semibold text-stone-800">{collectionPoint.name}</h2>
-//                                                 <p className="text-sm text-stone-600">{collectionPoint.address.city}, {collectionPoint.address.country}</p>
-//                                             </div>
-//                                             <div className="flex justify-between gap-4">
-//                                                 <div className='flex gap-2 items-end'>
-//                                                     <button className="aspect-square flex justify-center items-center size-8 bg-stone-100 hover:bg-red-500 active:bg-red-500 hover:text-stone-100 active:text-stone-100 transition rounded-lg shadow-sm
-//                                                                 text-sm xl:text-base"
-//                                                         onClick={() => handleSpaceDelete(collectionPoint.id)}>
-//                                                         <FontAwesomeIcon icon={faTrashCan} />
-//                                                     </button>
-//                                                     <button className="aspect-square flex justify-center items-center size-8 bg-stone-100 hover:bg-stone-900 active:bg-stone-900 hover:text-stone-100 active:text-stone-100 transition rounded-lg shadow-sm
-//                                                                 text-sm xl:text-base"
-//                                                         onClick={() => window.open(`/collectionPoints/${collectionPoint.id}`, '_blank')}>
-//                                                         <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
-//                                                     </button>
-//                                                 </div>
-//                                             </div>
-//                                         </div>
-//                                     ))
-//                                 ) : (
-//                                     <div className="w-full h-full flex items-center justify-center text-stone-600">
-//                                         <p className="text-xl">No collectionPoints found.</p>
-//                                     </div>
-//                                 )}
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </section >
-
-//                 {/* Modal */}
-//                 <CreateSpaceModal
-//                     isOpen={isModalOpen}
-//                     onClose={() => setModalOpen(false)}
-//                     onSubmitComplete={async (status) => {
-//                         if (status === 201)
-//                             console.log('CollectionPoint created successfully!');
-//                         await fetchUserData(); // Refresh collectionPoints after successful submission
-//                         setModalOpen(false);
-//                     }}
-//                     userId={operator.userId}
-//                 />
-
-//             </div >
-//         );
+export default ProfilePage;

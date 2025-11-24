@@ -1,13 +1,12 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
-import GitHubProvider from "next-auth/providers/github";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
+  secret: process.env.AUTH_SECRET, // ← AGGIUNTO QUI IN ALTO
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -22,7 +21,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const user = await prisma.user.findUnique({
           where: { email: credentials.email as string },
-          include: { operator: true },
         });
 
         if (!user || !user.password) {
@@ -45,14 +43,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           role: user.role,
         };
       },
-    }),
-    GoogleProvider({
-      clientId: process.env.AUTH_GOOGLE_ID || "",
-      clientSecret: process.env.AUTH_GOOGLE_SECRET || "",
-    }),
-    GitHubProvider({
-      clientId: process.env.AUTH_GITHUB_ID || "",
-      clientSecret: process.env.AUTH_GITHUB_SECRET || "",
     }),
   ],
   session: {
@@ -78,5 +68,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
   },
-  secret: process.env.AUTH_SECRET,
 });

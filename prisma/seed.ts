@@ -1,265 +1,329 @@
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Starting database seed...');
+  console.log("🌱 Inizio seeding del database...");
 
-  // Create waste types
-  console.log('Creating waste types...');
+  // Cancella dati esistenti (ordine importante!)
+  await prisma.report.deleteMany();
+  await prisma.collectionSchedule.deleteMany();
+  await prisma.address.deleteMany();
+  await prisma.collectionPoint.deleteMany();
+  await prisma.operator.deleteMany();
+  await prisma.user.deleteMany();
+
+  console.log("✅ Database pulito");
+
+  // Crea utenti normali
+  const hashedPassword = await bcrypt.hash("Password123!", 10);
+
+  const user1 = await prisma.user.create({
+    data: {
+      name: "Mario",
+      surname: "Rossi",
+      email: "mario.rossi@example.com",
+      password: hashedPassword,
+      role: "USER",
+      oauthProvider: "APP",
+      cellphone: "+39 333 1234567",
+    },
+  });
+
+  const user2 = await prisma.user.create({
+    data: {
+      name: "Giulia",
+      surname: "Verdi",
+      email: "giulia.verdi@example.com",
+      password: hashedPassword,
+      role: "USER",
+      oauthProvider: "APP",
+      cellphone: "+39 333 9876543",
+    },
+  });
+
+  console.log("✅ Utenti creati");
+
+  // Crea operatore
+  const operatorUser = await prisma.user.create({
+    data: {
+      name: "SmartWaste",
+      surname: "Operator",
+      email: "operatore@smartwaste.it",
+      password: hashedPassword,
+      role: "OPERATOR",
+      oauthProvider: "APP",
+      cellphone: "+39 06 1234567",
+    },
+  });
+
+  const operator = await prisma.operator.create({
+    data: {
+      userId: operatorUser.id,
+      organizationName: "SmartWaste Italia S.r.l.",
+      vatNumber: "IT12345678901",
+      telephone: "+39 06 1234567",
+      website: "https://smartwaste.it",
+    },
+  });
+
+  console.log("✅ Operatore creato");
+
+  // Crea tipi di rifiuto
   const wasteTypes = await Promise.all([
     prisma.wasteType.create({
       data: {
-        name: 'Plastica',
-        description: 'Contenitori in plastica, bottiglie, flaconi',
-        color: '#FFD700',
-        iconName: 'recycle',
-        disposalInfo: 'Svuotare e sciacquare i contenitori. Appiattire le bottiglie per ridurre il volume. Non inserire plastica sporca o con residui di cibo.',
-        examples: 'Bottiglie di acqua e bibite, flaconi di shampoo e detersivi, vaschette per alimenti, sacchetti puliti, imballaggi in plastica',
+        name: "PLASTIC",
+        description: "Plastica e imballaggi plastici",
+        color: "#FFEB3B",
+        iconName: "plastic",
+        disposalInfo: "Bottiglie, flaconi, vaschette",
+        examples: "Bottiglie PET, flaconi shampoo, vaschette alimentari",
       },
     }),
     prisma.wasteType.create({
       data: {
-        name: 'Carta e Cartone',
-        description: 'Giornali, riviste, scatole di cartone',
-        color: '#0066CC',
-        iconName: 'newspaper',
-        disposalInfo: 'Appiattire le scatole per ottimizzare lo spazio. Non inserire carta sporca, oleata o plastificata. Rimuovere nastri adesivi e parti in plastica o metallo.',
-        examples: 'Giornali, riviste, libri, quaderni, scatole di cartone, cartoni della pizza (se puliti), sacchetti di carta',
+        name: "PAPER",
+        description: "Carta e cartone",
+        color: "#2196F3",
+        iconName: "paper",
+        disposalInfo: "Carta pulita, cartoni, giornali",
+        examples: "Giornali, scatole di cartone, quaderni",
       },
     }),
     prisma.wasteType.create({
       data: {
-        name: 'Vetro',
-        description: 'Bottiglie e contenitori in vetro',
-        color: '#228B22',
-        iconName: 'wine-bottle',
-        disposalInfo: 'Svuotare e sciacquare i contenitori. Non inserire ceramica, porcellana, specchi, lampadine o vetri di finestre.',
-        examples: 'Bottiglie di vino, birra e acqua, vasetti di marmellata e conserve, contenitori in vetro per alimenti',
+        name: "GLASS",
+        description: "Vetro",
+        color: "#4CAF50",
+        iconName: "glass",
+        disposalInfo: "Bottiglie e barattoli in vetro",
+        examples: "Bottiglie di vino, barattoli di marmellata",
       },
     }),
     prisma.wasteType.create({
       data: {
-        name: 'Organico',
-        description: 'Scarti di cibo e rifiuti biodegradabili',
-        color: '#8B4513',
-        iconName: 'leaf',
-        disposalInfo: 'Utilizzare sacchetti biodegradabili e compostabili. Non inserire liquidi in grande quantità, oli esausti o ossa di grandi dimensioni.',
-        examples: 'Avanzi di cibo, bucce di frutta e verdura, fondi di caffè, filtri di tè, tovaglioli di carta sporchi, piccole ossa',
+        name: "METAL",
+        description: "Metalli e lattine",
+        color: "#9E9E9E",
+        iconName: "metal",
+        disposalInfo: "Lattine, barattoli metallici",
+        examples: "Lattine bibite, scatolette conserve",
       },
     }),
     prisma.wasteType.create({
       data: {
-        name: 'Indifferenziato',
-        description: 'Rifiuti non riciclabili negli altri contenitori',
-        color: '#808080',
-        iconName: 'trash',
-        disposalInfo: 'Conferire solo ciò che non può essere riciclato negli altri contenitori. Ridurre al minimo questa frazione differenziando correttamente.',
-        examples: 'Pannolini e assorbenti, carta sporca o plastificata, ceramica e porcellana, giocattoli rotti, oggetti in gomma',
+        name: "ORGANIC",
+        description: "Rifiuti organici",
+        color: "#8D6E63",
+        iconName: "organic",
+        disposalInfo: "Scarti alimentari biodegradabili",
+        examples: "Bucce di frutta, scarti verdura, fondi caffè",
       },
     }),
     prisma.wasteType.create({
       data: {
-        name: 'Metalli',
-        description: 'Lattine, barattoli, piccoli oggetti metallici',
-        color: '#C0C0C0',
-        iconName: 'can-food',
-        disposalInfo: 'Svuotare e sciacquare i contenitori. Separare eventuali parti non metalliche. Piccoli oggetti metallici vanno qui.',
-        examples: 'Lattine di alluminio, barattoli metallici, coperchi, pentole e padelle, piccoli elettrodomestici (dove previsto)',
+        name: "ELECTRONICS",
+        description: "Apparecchiature elettroniche (RAEE)",
+        color: "#F44336",
+        iconName: "electronics",
+        disposalInfo: "Dispositivi elettronici ed elettrici",
+        examples: "Smartphone, TV, elettrodomestici",
       },
     }),
   ]);
 
-  console.log(`✅ Created ${wasteTypes.length} waste types`);
+  console.log("✅ Tipi di rifiuto creati");
 
-  // Create example users
-  console.log('Creating users...');
-  const hashedPassword = await bcrypt.hash('Password123!', 10);
-
-  const citizen = await prisma.user.create({
-    data: {
-      email: 'mario.rossi@example.com',
-      name: 'Mario',
-      surname: 'Rossi',
-      cellphone: '+39 333 1234567',
-      role: 'USER',
-      password: hashedPassword,
-      oauthProvider: 'APP',
-    },
-  });
-
-  const operatorUser = await prisma.user.create({
-    data: {
-      email: 'comune.roma@example.com',
-      name: 'Comune',
-      surname: 'di Roma',
-      role: 'OPERATOR',
-      password: hashedPassword,
-      oauthProvider: 'APP',
-      operator: {
-        create: {
-          organizationName: 'Comune di Roma - Ufficio Ambiente',
-          vatNumber: 'IT12345678901',
-          telephone: '+39 06 67101',
-          website: 'https://www.comune.roma.it',
-        },
-      },
-    },
-  });
-
-  console.log('✅ Created users');
-
-  // Create collection points
-  console.log('Creating collection points...');
+  // Crea punti di raccolta con indirizzi
   
-  const ecoIsland1 = await prisma.collectionPoint.create({
+  // 1. Ancona
+  const pointAncona = await prisma.collectionPoint.create({
     data: {
-      name: 'Isola Ecologica Centro',
-      operatorId: operatorUser.id,
-      description: 'Centro di raccolta principale in zona centro. Accetta tutti i tipi di rifiuti differenziati. Personale disponibile per assistenza.',
+      name: "Centro Raccolta Ancona Nord",
+      operatorId: operator.userId,
+      description: "Centro principale della provincia di Ancona. Ampio parcheggio disponibile.",
       isActive: true,
-      accessibility: 'Accessibile a persone con disabilità, ampio parcheggio disponibile',
-      capacity: 'Grande - oltre 50 utenti/ora',
-      address: {
-        create: {
-          street: 'Via Roma',
-          number: '123',
-          city: 'Roma',
-          zip: '00100',
-          country: 'Italia',
-          latitude: 41.9028,
-          longitude: 12.4964,
-        },
-      },
+      accessibility: "Accessibile ai disabili",
+      capacity: "800 m³",
       wasteTypes: {
         connect: wasteTypes.map(wt => ({ id: wt.id })),
       },
-      schedule: {
-        create: {
-          monday: true,
-          tuesday: true,
-          wednesday: true,
-          thursday: true,
-          friday: true,
-          saturday: true,
-          sunday: false,
-          openingTime: '08:00',
-          closingTime: '20:00',
-          notes: 'Chiuso la domenica e nei giorni festivi',
-        },
-      },
     },
   });
 
-  const streetBins = await prisma.collectionPoint.create({
+  await prisma.address.create({
     data: {
-      name: 'Cassonetti Via Milano',
-      operatorId: operatorUser.id,
-      description: 'Postazione cassonetti stradali per raccolta differenziata. Svuotamento regolare 3 volte a settimana.',
+      collectionPointId: pointAncona.id,
+      street: "Via Flaminia",
+      number: "260",
+      city: "Ancona",
+      zip: "60126",
+      country: "Italy",
+      latitude: 43.6373,
+      longitude: 13.5158,
+    },
+  });
+
+  // 2. Pesaro
+  const pointPesaro = await prisma.collectionPoint.create({
+    data: {
+      name: "Ecocentro Pesaro",
+      operatorId: operator.userId,
+      description: "Punto di raccolta eco-sostenibile con area educativa.",
       isActive: true,
-      capacity: 'Media - 20-50 utenti/ora',
-      address: {
-        create: {
-          street: 'Via Milano',
-          number: '45',
-          city: 'Roma',
-          zip: '00184',
-          country: 'Italia',
-          latitude: 41.8919,
-          longitude: 12.5113,
-        },
-      },
+      accessibility: "Accessibile",
+      capacity: "600 m³",
       wasteTypes: {
-        connect: [
-          { id: wasteTypes[0].id }, // Plastica
-          { id: wasteTypes[1].id }, // Carta
-          { id: wasteTypes[2].id }, // Vetro
-          { id: wasteTypes[4].id }, // Indifferenziato
-        ],
-      },
-      schedule: {
-        create: {
-          isAlwaysOpen: true,
-          notes: 'Cassonetti stradali accessibili 24/7',
-        },
+        connect: wasteTypes.filter(wt => 
+          ["PLASTIC", "PAPER", "GLASS", "ELECTRONICS"].includes(wt.name)
+        ).map(wt => ({ id: wt.id })),
       },
     },
   });
 
-  const ecoIsland2 = await prisma.collectionPoint.create({
+  await prisma.address.create({
     data: {
-      name: 'Centro Raccolta Quartiere Nord',
-      operatorId: operatorUser.id,
-      description: 'Centro di raccolta di quartiere con area dedicata ai rifiuti ingombranti e RAEE.',
+      collectionPointId: pointPesaro.id,
+      street: "Via dell'Industria",
+      number: "45",
+      city: "Pesaro",
+      zip: "61122",
+      country: "Italy",
+      latitude: 43.9093,
+      longitude: 12.9134,
+    },
+  });
+
+  // 3. Macerata
+  const pointMacerata = await prisma.collectionPoint.create({
+    data: {
+      name: "Isola Ecologica Macerata",
+      operatorId: operator.userId,
+      description: "Chiuso il lunedì. Servizio di ritiro ingombranti su prenotazione.",
       isActive: true,
-      accessibility: 'Parcheggio disponibile, rampa di accesso',
-      capacity: 'Media - 30 utenti/ora',
-      address: {
-        create: {
-          street: 'Via Tiburtina',
-          number: '200',
-          city: 'Roma',
-          zip: '00185',
-          country: 'Italia',
-          latitude: 41.9109,
-          longitude: 12.5268,
-        },
+      accessibility: "Non accessibile",
+      capacity: "450 m³",
+      wasteTypes: {
+        connect: wasteTypes.filter(wt => 
+          ["PLASTIC", "PAPER", "GLASS", "ORGANIC"].includes(wt.name)
+        ).map(wt => ({ id: wt.id })),
       },
+    },
+  });
+
+  await prisma.address.create({
+    data: {
+      collectionPointId: pointMacerata.id,
+      street: "Via dei Velini",
+      number: "78",
+      city: "Macerata",
+      zip: "62100",
+      country: "Italy",
+      latitude: 43.2985,
+      longitude: 13.4532,
+    },
+  });
+
+  // 4. Ascoli Piceno
+  const pointAscoli = await prisma.collectionPoint.create({
+    data: {
+      name: "Centro Riciclo Ascoli Piceno",
+      operatorId: operator.userId,
+      description: "Centro con tecnologie avanzate di selezione rifiuti.",
+      isActive: true,
+      accessibility: "Accessibile",
+      capacity: "700 m³",
       wasteTypes: {
         connect: wasteTypes.map(wt => ({ id: wt.id })),
       },
-      schedule: {
-        create: {
-          monday: true,
-          tuesday: false,
-          wednesday: true,
-          thursday: false,
-          friday: true,
-          saturday: true,
-          sunday: false,
-          openingTime: '09:00',
-          closingTime: '18:00',
-          notes: 'Aperto lunedì, mercoledì, venerdì e sabato',
-        },
+    },
+  });
+
+  await prisma.address.create({
+    data: {
+      collectionPointId: pointAscoli.id,
+      street: "Via Salaria Inferiore",
+      number: "123",
+      city: "Ascoli Piceno",
+      zip: "63100",
+      country: "Italy",
+      latitude: 42.8534,
+      longitude: 13.5759,
+    },
+  });
+
+  // 5. Fano
+  const pointFano = await prisma.collectionPoint.create({
+    data: {
+      name: "Punto Verde Fano",
+      operatorId: operator.userId,
+      description: "Centro vicino al mare, ideale per turisti. No parcheggio interno.",
+      isActive: true,
+      accessibility: "Accessibile",
+      capacity: "350 m³",
+      wasteTypes: {
+        connect: wasteTypes.filter(wt => 
+          ["PLASTIC", "PAPER", "GLASS", "ORGANIC"].includes(wt.name)
+        ).map(wt => ({ id: wt.id })),
       },
     },
   });
 
-  console.log('✅ Created 3 collection points');
-
-  // Create example reports
-  console.log('Creating example reports...');
-  
-  await prisma.report.create({
+  await prisma.address.create({
     data: {
-      userId: citizen.id,
-      collectionPointId: streetBins.id,
-      type: 'FULL_BIN',
-      description: 'Il cassonetto della plastica è completamente pieno e trabocca. Alcuni rifiuti sono caduti a terra.',
-      status: 'PENDING',
+      collectionPointId: pointFano.id,
+      street: "Via Roma",
+      number: "89",
+      city: "Fano",
+      zip: "61032",
+      country: "Italy",
+      latitude: 43.8408,
+      longitude: 13.0173,
     },
   });
 
-  await prisma.report.create({
+  // 6. Roma (Lazio)
+  const pointRoma = await prisma.collectionPoint.create({
     data: {
-      userId: citizen.id,
-      collectionPointId: streetBins.id,
-      type: 'NEEDS_CLEANING',
-      description: 'Area intorno ai cassonetti sporca, necessita pulizia',
-      status: 'IN_PROGRESS',
-      resolvedBy: operatorUser.id,
+      name: "AMA Centro Raccolta Ostia",
+      operatorId: operator.userId,
+      description: "Centro raccolta principale zona litoranea. Servizio gratuito per residenti.",
+      isActive: true,
+      accessibility: "Accessibile",
+      capacity: "1000 m³",
+      wasteTypes: {
+        connect: wasteTypes.map(wt => ({ id: wt.id })),
+      },
     },
   });
 
-  console.log('✅ Created example reports');
+  await prisma.address.create({
+    data: {
+      collectionPointId: pointRoma.id,
+      street: "Via delle Baleniere",
+      number: "98",
+      city: "Roma",
+      zip: "00121",
+      country: "Italy",
+      latitude: 41.7308,
+      longitude: 12.2904,
+    },
+  });
 
-  console.log('🎉 Database seed completed successfully!');
+  console.log("✅ Creati 6 punti di raccolta con indirizzi");
+
+  console.log("\n🎉 Seed completato con successo!");
+  console.log("\n📋 Credenziali di accesso:");
+  console.log("👤 User 1: mario.rossi@example.com / Password123!");
+  console.log("👤 User 2: giulia.verdi@example.com / Password123!");
+  console.log("👨‍💼 Operator: operatore@smartwaste.it / Password123!");
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error during seed:', e);
+    console.error("❌ Errore durante il seeding:", e);
     process.exit(1);
   })
   .finally(async () => {

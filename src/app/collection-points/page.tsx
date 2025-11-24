@@ -93,24 +93,75 @@ const CollectionPointsPage = () => {
     // Filter by waste type
     if (selectedWasteType !== 'all') {
       filtered = filtered.filter(point =>
-        point.wasteTypes.some(type => type.name.toLowerCase() === selectedWasteType.toLowerCase())
+        point.wasteTypes.some(type => {
+          const upperName = type.name.toUpperCase();
+          const upperFilter = selectedWasteType.toUpperCase();
+          
+          if (upperFilter === 'PLASTICA') return upperName.includes('PLASTIC') || upperName.includes('PLASTICA');
+          if (upperFilter === 'CARTA') return upperName.includes('PAPER') || upperName.includes('CARTA');
+          if (upperFilter === 'VETRO') return upperName.includes('GLASS') || upperName.includes('VETRO');
+          if (upperFilter === 'ORGANICO') return upperName.includes('ORGANIC') || upperName.includes('ORGANICO');
+          if (upperFilter === 'METALLO') return upperName.includes('METAL') || upperName.includes('METALLO');
+          if (upperFilter === 'RAEE') return upperName.includes('ELECTRON') || upperName.includes('RAEE');
+          
+          return false;
+        })
       );
     }
 
     setFilteredPoints(filtered);
   }, [searchQuery, selectedWasteType, collectionPoints]);
 
-  // Get waste type color
+  // Get waste type color and translate to Italian
   const getWasteTypeColor = (name: string) => {
-    const colors: { [key: string]: string } = {
-      'Plastica': 'bg-yellow-400',
-      'Carta': 'bg-blue-400',
-      'Vetro': 'bg-green-500',
-      'Organico': 'bg-amber-600',
-      'Indifferenziato': 'bg-gray-500',
-      'RAEE': 'bg-red-500',
-    };
-    return colors[name] || 'bg-stone-400';
+    const upperName = name.toUpperCase().trim();
+    
+    // Plastica
+    if (upperName.includes('PLASTIC') || upperName.includes('PLASTICA')) {
+      return 'bg-yellow-100 text-yellow-700 border-2 border-yellow-400';
+    }
+    // Carta
+    if (upperName.includes('PAPER') || upperName.includes('CARTA') || upperName.includes('CARDBOARD')) {
+      return 'bg-blue-100 text-blue-700 border-2 border-blue-400';
+    }
+    // Vetro
+    if (upperName.includes('GLASS') || upperName.includes('VETRO')) {
+      return 'bg-green-100 text-green-700 border-2 border-green-500';
+    }
+    // Metallo
+    if (upperName.includes('METAL') || upperName.includes('METALLO') || upperName.includes('ALLUMINIO') || upperName.includes('ALUMINUM')) {
+      return 'bg-stone-100 text-stone-700 border-2 border-stone-400';
+    }
+    // Organico
+    if (upperName.includes('ORGANIC') || upperName.includes('ORGANICO') || upperName.includes('BIO')) {
+      return 'bg-amber-100 text-amber-800 border-2 border-amber-500';
+    }
+    // Elettronica / RAEE
+    if (upperName.includes('ELECTRON') || upperName.includes('RAEE') || upperName.includes('WEEE')) {
+      return 'bg-red-100 text-red-700 border-2 border-red-400';
+    }
+    // Indifferenziato
+    if (upperName.includes('UNSORTED') || upperName.includes('INDIFFERENZIATO') || upperName.includes('RESIDUAL')) {
+      return 'bg-stone-200 text-stone-700 border-2 border-stone-400';
+    }
+    
+    // Default (grigio)
+    return 'bg-gray-100 text-gray-700 border-2 border-gray-300';
+  };
+
+  // Translate waste type name to Italian
+  const translateWasteType = (name: string) => {
+    const upperName = name.toUpperCase().trim();
+    
+    if (upperName.includes('PLASTIC') || upperName.includes('PLASTICA')) return 'Plastica';
+    if (upperName.includes('PAPER') || upperName.includes('CARTA')) return 'Carta';
+    if (upperName.includes('GLASS') || upperName.includes('VETRO')) return 'Vetro';
+    if (upperName.includes('METAL') || upperName.includes('METALLO')) return 'Metallo';
+    if (upperName.includes('ORGANIC') || upperName.includes('ORGANICO')) return 'Organico';
+    if (upperName.includes('ELECTRON') || upperName.includes('RAEE')) return 'RAEE';
+    if (upperName.includes('UNSORTED') || upperName.includes('INDIFFERENZIATO')) return 'Indifferenziato';
+    
+    return name; // Ritorna il nome originale se non trova corrispondenza
   };
 
   // Format schedule
@@ -182,7 +233,7 @@ const CollectionPointsPage = () => {
               <option value="carta">Carta</option>
               <option value="vetro">Vetro</option>
               <option value="organico">Organico</option>
-              <option value="indifferenziato">Indifferenziato</option>
+              <option value="metallo">Metallo</option>
               <option value="raee">RAEE</option>
             </select>
           </div>
@@ -247,10 +298,10 @@ const CollectionPointsPage = () => {
                   {point.wasteTypes.map((type) => (
                     <span
                       key={type.id}
-                      className={`${getWasteTypeColor(type.name)} px-3 py-1 rounded-full 
-                               text-xs font-semibold text-stone-900 shadow-sm`}
+                      className={`${getWasteTypeColor(type.name)} px-3 py-1.5 rounded-full 
+                               text-xs font-bold shadow-sm`}
                     >
-                      {type.name}
+                      {translateWasteType(type.name)}
                     </span>
                   ))}
                 </div>
