@@ -1,33 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
+import { collectionPointService } from '@/services/collectionPointService';
 
 export async function GET(request: NextRequest) {
   try {
-    const collectionPoints = await prisma.collectionPoint.findMany({
-      where: {
-        isActive: true,
-      },
-      include: {
-        address: true,
-        wasteTypes: true,
-        schedule: true,
-        operator: {
-          include: {
-            user: {
-              select: {
-                name: true,
-                email: true,
-              },
-            },
-          },
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-
+    const collectionPoints = await collectionPointService.getAllCollectionPoints();
     return NextResponse.json(collectionPoints);
   } catch (error) {
     console.error('Error fetching collection points:', error);
@@ -64,53 +41,29 @@ export async function POST(request: NextRequest) {
       capacity,
     } = body;
 
-    const collectionPoint = await prisma.collectionPoint.create({
-      data: {
-        name,
-        description,
-        operatorId,
-        accessibility,
-        capacity,
-        address: address ? {
-          create: {
-            street: address.street,
-            number: address.number,
-            city: address.city,
-            zip: address.zip,
-            country: address.country || 'Italy',
-            latitude: address.latitude,
-            longitude: address.longitude,
-          },
-        } : undefined,
-        wasteTypes: wasteTypeIds ? {
-          connect: wasteTypeIds.map((id: number) => ({ id })),
-        } : undefined,
-        schedule: schedule ? {
-          create: {
-            monday: schedule.monday || false,
-            tuesday: schedule.tuesday || false,
-            wednesday: schedule.wednesday || false,
-            thursday: schedule.thursday || false,
-            friday: schedule.friday || false,
-            saturday: schedule.saturday || false,
-            sunday: schedule.sunday || false,
-            openingTime: schedule.openingTime,
-            closingTime: schedule.closingTime,
-            notes: schedule.notes,
-            isAlwaysOpen: schedule.isAlwaysOpen || false,
-          },
-        } : undefined,
-      },
-      include: {
-        address: true,
-        wasteTypes: true,
-        schedule: true,
-      },
+    const collectionPoint = await collectionPointService.createCollectionPoint({
+      name,
+      description,
+      operatorId,
+      address,
+      wasteTypeIds,
+      schedule,
+      accessibility,
+      capacity,
     });
 
     return NextResponse.json(collectionPoint, { status: 201 });
   } catch (error) {
     console.error('Error creating collection point:', error);
+    
+    // Check if it's a validation error from the service
+    if (error instanceof Error && error.message.includes('required')) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 400 }
+      );
+    }
+    
     return NextResponse.json(
       { error: 'Failed to create collection point' },
       { status: 500 }
