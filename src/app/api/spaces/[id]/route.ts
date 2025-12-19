@@ -75,6 +75,20 @@ export async function PUT(request: Request, { params }: { params: { id: string }
             );
         }
 
+        // Check ownership
+        const space = await prisma.collectionPoint.findUnique({
+            where: { id: spaceId },
+            select: { operatorId: true }
+        });
+
+        if (!space) {
+            return NextResponse.json({ error: 'Not found' }, { status: 404 });
+        }
+
+        if (space.operatorId !== session.user.id) {
+            return NextResponse.json({ error: 'Not authorized to modify this resource' }, { status: 403 });
+        }
+
         const formData = await request.formData();
 
         // Handle images
@@ -199,8 +213,22 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
             );
         }
 
+        // Check ownership
+        const space = await prisma.collectionPoint.findUnique({
+            where: { id: spaceId },
+            select: { operatorId: true }
+        });
+
+        if (!space) {
+            return NextResponse.json({ error: 'Not found' }, { status: 404 });
+        }
+
+        if (space.operatorId !== session.user.id) {
+            return NextResponse.json({ error: 'Not authorized to modify this resource' }, { status: 403 });
+        }
+
         // Delete the collectionPoint from the database
-        const deletedSpace = await prisma.collectionPoint.delete({
+        await prisma.collectionPoint.delete({
             where: { id: spaceId },
         });
 
