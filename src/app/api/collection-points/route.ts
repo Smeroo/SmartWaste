@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { auth } from '@/auth';
 
 export async function GET(request: NextRequest) {
   try {
@@ -39,6 +40,17 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if user is authenticated
+    const session = await auth();
+
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "User not authenticated" }, { status: 401 });
+    }
+
+    if (session.user.role !== 'OPERATOR' && session.user.role !== 'ADMIN') {
+      return NextResponse.json({ error: "User not authorized" }, { status: 403 });
+    }
+
     const body = await request.json();
     
     const {
