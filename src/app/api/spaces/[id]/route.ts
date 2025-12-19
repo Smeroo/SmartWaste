@@ -213,7 +213,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
             console.error('Failed to delete folder:', fsError);
         }
 
-        return NextResponse.json(deletedSpace);
+        return new NextResponse(null, { status: 204 });
     } catch (error) {
         return NextResponse.json({ error: 'Delete failed' + error }, { status: 500 });
     }

@@ -87,7 +87,7 @@ export async function DELETE() {
       where: { email: session.user.email }
     });
 
-    return NextResponse.json({ message: "User account deleted successfully" }, { status: 200 });
+    return new NextResponse(null, { status: 204 });
 
   } catch (error) {
     console.error("Error deleting profile:", error);
