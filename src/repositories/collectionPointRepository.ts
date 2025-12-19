@@ -108,7 +108,7 @@ export const collectionPointRepository = {
           },
         } : undefined,
         wasteTypes: data.wasteTypeIds ? {
-          connect: data.wasteTypeIds.map((id: number) => ({ id })),
+          connect: data.wasteTypeIds.map((id) => ({ id })),
         } : undefined,
         schedule: data.schedule ? {
           create: {
