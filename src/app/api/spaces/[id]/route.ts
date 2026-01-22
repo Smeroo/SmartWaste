@@ -35,7 +35,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
         // Fetch the collectionPoint with its related data
         const collectionPoint = await prisma.collectionPoint.findUnique({
             where: { id: spaceId },
-            include: { address: true, services: true, visits: true, reviews: true }
+            include: { address: true, wasteTypes: true }
         });
 
         if (!collectionPoint) {
@@ -131,7 +131,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
                         },
                     },
                 }),
-                services: metadata.services && metadata.services.length > 0
+                wasteTypes: metadata.services && metadata.services.length > 0
                     ? {
                         set: metadata.services.map((serviceId: string) => ({ id: parseInt(serviceId) })),
                     }
