@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
+import { Role, OAuthProvider } from "@prisma/client";
 
 export async function POST(req: Request) {
   try {
@@ -9,7 +10,7 @@ export async function POST(req: Request) {
     const {
       email,
       password,
-      role, // "CLIENT" || "AGENCY"
+      role, // USER || OPERATOR
       name,
       surname, // for User
       cellphone,
@@ -30,55 +31,50 @@ export async function POST(req: Request) {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Map frontend role to database role
+    let dbRole: Role = Role.USER; // Default
+    if (role === "AGENCY") {
+      dbRole = Role.OPERATOR;
+    }
 
-    // create user
-    const newUser = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        role,
-        oauthProvider: "APP", // credentials
-        oauthId: null, // for compatibility with schema.prisma
-      },
-    });
-
-    if (role === "CLIENT" && (!name || !surname || !cellphone)) {
+    if (dbRole === Role.USER && (!name || !surname || !cellphone)) {
       return NextResponse.json(
         { message: "Missing User data" },
         { status: 400 }
       );
     }
 
-    if (role === "AGENCY" && (!name || !vatNumber || !telephone)) {
+    if (dbRole === Role.OPERATOR && (!name || !vatNumber || !telephone)) {
       return NextResponse.json(
         { message: "Missing Operator data" },
         { status: 400 }
       );
     }
 
-    // create profile based on role
-    if (role === "CLIENT") {
-      await prisma.user.create({
-        data: {
-          name,
-          surname,
-          cellphone,
-          user: {
-            connect: { id: newUser.id }, 
-          },
-        },
-      });
-    } else if (role === "AGENCY") {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create User first
+    const user = await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        role: dbRole,
+        oauthProvider: OAuthProvider.APP,
+        name: name,
+        surname: dbRole === Role.USER ? surname : undefined, // Only store surname for standard users if schema permits
+        cellphone: dbRole === Role.USER ? cellphone : undefined,
+      }
+    });
+
+    // Create Operator profile if needed
+    if (dbRole === Role.OPERATOR) {
       await prisma.operator.create({
         data: {
-          name,
+          user: { connect: { id: user.id } },
+          organizationName: name, // Map 'name' from form to 'organizationName'
           vatNumber,
           telephone,
-          user: {
-            connect: { id: newUser.id },
-          },
-        },
+        }
       });
     }
 
