@@ -62,7 +62,6 @@ async function main() {
     data: {
       userId: operatorUser.id,
       organizationName: "SmartWaste Italia S.r.l.",
-      vatNumber: "IT12345678901",
       telephone: "+39 06 1234567",
       website: "https://smartwaste.it",
     },
@@ -137,7 +136,7 @@ async function main() {
   console.log("✅ Tipi di rifiuto creati");
 
   // Crea punti di raccolta con indirizzi
-  
+
   // 1. Ancona
   const pointAncona = await prisma.collectionPoint.create({
     data: {
@@ -176,7 +175,7 @@ async function main() {
       accessibility: "Accessibile",
       capacity: "600 m³",
       wasteTypes: {
-        connect: wasteTypes.filter(wt => 
+        connect: wasteTypes.filter(wt =>
           ["PLASTIC", "PAPER", "GLASS", "ELECTRONICS"].includes(wt.name)
         ).map(wt => ({ id: wt.id })),
       },
@@ -206,7 +205,7 @@ async function main() {
       accessibility: "Non accessibile",
       capacity: "450 m³",
       wasteTypes: {
-        connect: wasteTypes.filter(wt => 
+        connect: wasteTypes.filter(wt =>
           ["PLASTIC", "PAPER", "GLASS", "ORGANIC"].includes(wt.name)
         ).map(wt => ({ id: wt.id })),
       },
@@ -264,7 +263,7 @@ async function main() {
       accessibility: "Accessibile",
       capacity: "350 m³",
       wasteTypes: {
-        connect: wasteTypes.filter(wt => 
+        connect: wasteTypes.filter(wt =>
           ["PLASTIC", "PAPER", "GLASS", "ORGANIC"].includes(wt.name)
         ).map(wt => ({ id: wt.id })),
       },

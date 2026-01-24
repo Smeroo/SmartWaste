@@ -2,17 +2,17 @@
 import { Observer } from "tailwindcss-intersect";
 import { useEffect } from "react";
 
-// ObserverProvider initializes the Intersection Observer for Tailwind CSS utilities
+// ObserverProvider inizializza l'Intersection Observer per le utility Tailwind CSS
 export default function ObserverProvider({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    // Start the observer when the component mounts
+    // Avvia l'observer quando il componente viene montato
     useEffect(() => {
         Observer.start();
     }, []);
 
-    // Render children as-is
+    // Renderizza i children così come sono
     return <>{children}</>;
 }

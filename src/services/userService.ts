@@ -1,8 +1,8 @@
 import { prisma } from '@/lib/prisma';
 
 /**
- * Service layer for User business logic
- * Separates business logic from API route handlers
+ * Layer di servizio per la logica di business dell'Utente
+ * Separa la logica di business dai gestori delle route API
  */
 
 export interface UpdateUserProfileData {
@@ -12,7 +12,7 @@ export interface UpdateUserProfileData {
 }
 
 /**
- * Get user profile by email
+ * Ottieni il profilo utente tramite email
  */
 export async function getUserProfile(email: string) {
   const user = await prisma.user.findUnique({
@@ -36,7 +36,7 @@ export async function getUserProfile(email: string) {
 }
 
 /**
- * Update user profile
+ * Aggiorna il profilo utente
  */
 export async function updateUserProfile(email: string, data: UpdateUserProfileData) {
   return await prisma.user.update({
@@ -59,7 +59,7 @@ export async function updateUserProfile(email: string, data: UpdateUserProfileDa
 }
 
 /**
- * Delete user account
+ * Elimina l'account utente
  */
 export async function deleteUserAccount(email: string) {
   await prisma.user.delete({

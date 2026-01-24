@@ -1,4 +1,4 @@
-// SmartWaste Database Schema
+// Schema del Database SmartWaste
 
 generator client {
   provider = "prisma-client-js"
@@ -126,7 +126,6 @@ model Operator {
   userId           String            @id
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   organizationName String
-  vatNumber        String?
   telephone        String?
   website          String?
   collectionPoints CollectionPoint[]

@@ -11,13 +11,13 @@ export async function middleware(request: NextRequest) {
   const isAuth = !!token;
   const { pathname } = request.nextUrl;
 
-  // Oages accessible only WITHOUT authentication
+  // Pagine accessibili solo SENZA autenticazione
   if (isAuth && (pathname === "/login" || pathname === "/register")) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // Pages accessible only WITH authentication
-  if (!isAuth &&(pathname === "/profile")) {
+  // Pagine accessibili solo CON autenticazione
+  if (!isAuth && (pathname === "/profile")) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 

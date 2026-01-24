@@ -18,7 +18,7 @@ export async function createUserAndAccount({
   role = "USER",
 }: CreateUserAndAccountParams) {
 
-  // Map internal role to DB role
+  // Mappa il ruolo interno al ruolo nel DB
   const dbRole = role;
 
   const user = await prisma.user.create({
@@ -28,7 +28,7 @@ export async function createUserAndAccount({
       oauthId: providerAccountId,
       // @ts-ignore
       role: dbRole,
-      name: "", // Required by schema
+      name: "", // Richiesto dallo schema
     },
   });
 

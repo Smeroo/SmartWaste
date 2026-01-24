@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
       return new Response("User not found", { status: 404 });
     }
 
-    // Check if the user already has a profile
+    // Controlla se l'utente ha già un profilo
     if (user.operator || (user.role === "USER" && user.name && user.surname)) {
       return NextResponse.json(
         { message: "Profile already completed." },
@@ -30,8 +30,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Map role to DB enum (Direct mapping now)
-    // Map role to DB enum
     const dbRole = role === "OPERATOR" ? "OPERATOR" : "USER";
 
     if (dbRole === "USER") {
@@ -41,7 +39,7 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
       }
-      // Update existing user with profile data
+      // Aggiorna utente esistente con dati profilo
       await prisma.user.update({
         where: { email },
         data: {
@@ -58,27 +56,26 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // Create operator profile linked to the user
+      // Crea profilo operatore collegato all'utente
       const existingUser = await prisma.user.findUnique({ where: { email } });
       if (!existingUser) return NextResponse.json({ message: "User not found" }, { status: 404 });
 
       await prisma.operator.create({
         data: {
-          organizationName: rest.name, // Map name to organizationName
-          vatNumber: rest.vatNumber || null,
-          telephone: "", // Workaround for stale Prisma Client types
+          organizationName: rest.name, // Mappa name su organizationName
+          telephone: "", // Workaround per tipi Prisma Client obsoleti
           user: { connect: { id: existingUser.id } },
         },
       });
 
-      // Update role on user
+      // Aggiorna ruolo su utente
       await prisma.user.update({
         where: { email },
         data: { role: "OPERATOR" },
       });
     }
 
-    // To update the user's role (redundant but safe)
+    // Per aggiornare il ruolo dell'utente (ridondante ma sicuro)
     await prisma.user.update({
       where: { email },
       data: { role: dbRole },

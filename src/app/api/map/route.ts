@@ -1,11 +1,11 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
-// Handles GET requests to the /api/map
-// Returns all collectionPoints with their coordinates
+// Gestisce richieste GET a /api/map
+// Restituisce tutti i collectionPoints con le loro coordinate
 export async function GET() {
     try {
-        // Fetch all collectionPoints with their coordinates
+        // Recupera tutti i collectionPoints con le loro coordinate
         const collectionPoints = await prisma.collectionPoint.findMany({
             select: {
                 id: true,
@@ -22,11 +22,11 @@ export async function GET() {
             }
         });
 
-        // Return the collectionPoints as JSON response
+        // Restituisce i collectionPoints come risposta JSON
         return NextResponse.json(collectionPoints);
     }
     catch (error) {
-        // Handle any errors that occur during the fetch
+        // Gestisce eventuali errori che si verificano durante il recupero
         return NextResponse.json({ error: 'Failed to fetch collectionPoints coordinates' }, { status: 500 });
     }
 }

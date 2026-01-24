@@ -1,10 +1,10 @@
 "use client";
 import { useEffect } from 'react';
 
-// RegisterSW registers the service worker for PWA/offline support
+// RegisterSW registra il service worker per supporto PWA/offline
 export default function RegisterSW() {
   useEffect(() => {
-    // Register the service worker if supported by the browser
+    // Registra il service worker se supportato dal browser
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('/sw.js')
@@ -13,6 +13,6 @@ export default function RegisterSW() {
     }
   }, []);
 
-  // This component does not render anything
+  // Questo componente non renderizza nulla
   return null;
 }

@@ -7,8 +7,6 @@ export async function GET(
     { params }: { params: { id: string } }
 ) {
     try {
-        // Await params if necessary (Next.js 15), but standard access assumes params is available or awaitable. 
-        // In Next 15 params is async.
         const { id } = await params;
         const pointId = parseInt(id);
 

@@ -1,11 +1,11 @@
 import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server';
 
-// Handles GET requests to /api/services
-// Fetch all services
+// Gestisce richieste GET a /api/services
+// Recupera tutti i servizi
 export async function GET() {
   try {
-    // Fetch all waste types
+    // Recupera tutti i tipi di rifiuto
     const services = await prisma.wasteType.findMany();
 
     return NextResponse.json(services);

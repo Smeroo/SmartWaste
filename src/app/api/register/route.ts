@@ -12,11 +12,10 @@ export async function POST(req: Request) {
       password,
       role, // USER || OPERATOR
       name,
-      surname, // for User
-      vatNumber, // for Operator
+      surname, // per Utente
     } = body;
 
-    // validation of required fields
+    // validazione dei campi obbligatori
     if (!email || !password || !role) {
       return NextResponse.json({ message: "Missing Data" }, { status: 400 });
     }
@@ -29,7 +28,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // Map frontend role to database role
+    // Mappa ruolo frontend su ruolo database
     const dbRole: Role = role === "OPERATOR" ? Role.OPERATOR : Role.USER;
 
     if (dbRole === Role.USER && (!name || !surname)) {
@@ -48,7 +47,7 @@ export async function POST(req: Request) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create User first
+    // Crea prima l'Utente
     const user = await prisma.user.create({
       data: {
         email,
@@ -60,13 +59,12 @@ export async function POST(req: Request) {
       }
     });
 
-    // Create Operator profile if needed
+    // Crea profilo Operatore se necessario
     if (dbRole === Role.OPERATOR) {
       await prisma.operator.create({
         data: {
-          organizationName: name, // Map 'name' from form to 'organizationName'
-          vatNumber: vatNumber || null,
-          telephone: "", // Workaround for stale Prisma Client types
+          organizationName: name, // Mappa 'name' dal modulo su 'organizationName'
+          telephone: "", // Workaround per tipi Prisma Client obsoleti
           user: { connect: { id: user.id } },
         }
       });

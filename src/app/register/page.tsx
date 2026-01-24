@@ -78,7 +78,7 @@ const RegisterPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center px-5 py-28 bg-gradient-to-br from-emerald-500 to-green-700">
       <div className="bg-stone-100 rounded-3xl shadow-2xl p-8 md:p-12 w-full max-w-md">
-        {/* Header */}
+        {/* Intestazione */}
         <div className="text-center mb-8">
           <div className="inline-block bg-emerald-500 p-4 rounded-full mb-4">
             <FontAwesomeIcon icon={faLeaf} className="text-4xl text-white" />
@@ -89,7 +89,7 @@ const RegisterPage = () => {
           <p className="text-stone-600">Crea il tuo account gratuito</p>
         </div>
 
-        {/* Form */}
+        {/* Modulo */}
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Nome */}
           <div className="relative">
@@ -186,7 +186,7 @@ const RegisterPage = () => {
             />
           </div>
 
-          {/* Submit Button */}
+          {/* Pulsante Invio */}
           <button
             type="submit"
             disabled={loading}
@@ -208,7 +208,7 @@ const RegisterPage = () => {
           </button>
         </form>
 
-        {/* Privacy Notice */}
+        {/* Informativa Privacy */}
         <p className="text-xs text-stone-500 text-center mt-5">
           Registrandoti accetti i nostri{' '}
           <Link href="/terms" className="text-emerald-500 hover:underline">
@@ -220,7 +220,7 @@ const RegisterPage = () => {
           </Link>
         </p>
 
-        {/* Login Link */}
+        {/* Link Accesso */}
         <div className="text-center mt-6">
           <p className="text-stone-600">
             Hai già un account?{' '}

@@ -1,21 +1,21 @@
 "use client";
-// This page allows users to reset their password using a token from the URL.
+// Questa pagina permette agli utenti di reimpostare la loro password usando un token dall'URL.
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 
-// Import necessary hooks for state management and URL parameter access.
+// Importa hook necessari per gestione stato e accesso parametri URL.
 
 export default function ResetPasswordPage() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
-  // Get the reset token from the URL query parameters.
+  // Ottieni il token di reset dai parametri di query dell'URL.
 
   const [password, setPassword] = useState("");
   const [success, setSuccess] = useState(false);
 
-  // State variables for the new password and success status.
+  // Variabili di stato per la nuova password e stato di successo.
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +26,7 @@ export default function ResetPasswordPage() {
       body: JSON.stringify({ token, password }),
     });
 
-    // Handles form submission: sends the new password and token to the API.
+    // Gestisce invio modulo: invia nuova password e token all'API.
 
     if (res.ok) setSuccess(true);
   };

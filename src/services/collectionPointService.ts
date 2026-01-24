@@ -2,8 +2,8 @@ import { prisma } from '@/lib/prisma';
 import { Prisma } from '@prisma/client';
 
 /**
- * Service layer for CollectionPoint business logic
- * Separates business logic from API route handlers
+ * Layer di servizio per la logica di business dei Punti di Raccolta
+ * Separa la logica di business dai gestori delle route API
  */
 
 export interface CollectionPointFilters {
@@ -74,7 +74,7 @@ export interface UpdateCollectionPointData {
 }
 
 /**
- * Get all collection points with optional filters
+ * Ottieni tutti i punti di raccolta con filtri opzionali
  */
 export async function getCollectionPoints(filters?: CollectionPointFilters) {
   const where: Prisma.CollectionPointWhereInput = {
@@ -125,7 +125,7 @@ export async function getCollectionPoints(filters?: CollectionPointFilters) {
 }
 
 /**
- * Get a single collection point by ID
+ * Ottieni un singolo punto di raccolta tramite ID
  */
 export async function getCollectionPointById(id: number) {
   return await prisma.collectionPoint.findUnique({
@@ -162,7 +162,7 @@ export async function getCollectionPointById(id: number) {
 }
 
 /**
- * Create a new collection point
+ * Crea un nuovo punto di raccolta
  */
 export async function createCollectionPoint(data: CreateCollectionPointData) {
   return await prisma.collectionPoint.create({
@@ -218,15 +218,15 @@ export async function createCollectionPoint(data: CreateCollectionPointData) {
 }
 
 /**
- * Update an existing collection point
- * Verifies ownership before updating
+ * Aggiorna un punto di raccolta esistente
+ * Verifica la proprietà prima dell'aggiornamento
  */
 export async function updateCollectionPoint(
   id: number,
   userId: string,
   data: UpdateCollectionPointData
 ) {
-  // Verify ownership
+  // Verifica la proprietà
   const collectionPoint = await prisma.collectionPoint.findUnique({
     where: { id },
     select: { operatorId: true },
@@ -240,7 +240,7 @@ export async function updateCollectionPoint(
     throw new Error('Not authorized to update this resource');
   }
 
-  // Update the collection point
+  // Aggiorna il punto di raccolta
   return await prisma.collectionPoint.update({
     where: { id },
     data: {
@@ -308,11 +308,11 @@ export async function updateCollectionPoint(
 }
 
 /**
- * Delete a collection point
- * Verifies ownership before deleting
+ * Elimina un punto di raccolta
+ * Verifica la proprietà prima dell'eliminazione
  */
 export async function deleteCollectionPoint(id: number, userId: string) {
-  // Verify ownership
+  // Verifica la proprietà
   const collectionPoint = await prisma.collectionPoint.findUnique({
     where: { id },
     select: { operatorId: true },
@@ -326,7 +326,7 @@ export async function deleteCollectionPoint(id: number, userId: string) {
     throw new Error('Not authorized to delete this resource');
   }
 
-  // Delete the collection point
+  // Elimina il punto di raccolta
   await prisma.collectionPoint.delete({
     where: { id },
   });

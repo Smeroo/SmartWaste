@@ -4,7 +4,7 @@
 @plugin "tailwindcss-intersect";
 
 /*
-  Theme color variables for custom palettes (Google, GitHub, Turquoise Blue, West Side)
+  Variabili di colore del tema per palette personalizzate (Google, GitHub, Turchese, West Side)
 */
 @theme {
 
@@ -40,7 +40,7 @@
 }
 
 /*
-  Dots animation for session verification/loading indicators
+  Animazione puntini per verifica sessione/indicatori di caricamento
 */
 @keyframes dots {
   0% {
@@ -71,14 +71,14 @@
 }
 
 /*
-  Snake mode highlight for calendar
+  Evidenziazione modalità Snake per calendario
 */
 .snake-hover {
   @apply bg-west-side-200 text-west-side-900;
 }
 
 /*
-  Custom scrollbar styles for all browsers
+  Stili scrollbar personalizzati per tutti i browser
 */
 *::-webkit-scrollbar {
   width: 0.5rem;
@@ -117,11 +117,11 @@
 }
 
 /*
-  Remove spinner arrows from number inputs
+  Rimuovi frecce spinner dagli input numerici
 */
 .no-spinner {
   appearance: textfield;
-  /* Standard property for compatibility */
+  /* Proprietà standard per compatibilità */
   -moz-appearance: textfield;
   /* Per Firefox */
 }
@@ -134,7 +134,7 @@
 }
 
 /*
-  Custom styles for range sliders
+  Stili personalizzati per range slider
 */
 input[type="range"] {
   -webkit-appearance: none;
@@ -173,14 +173,14 @@ input[type="range"]::-ms-thumb {
 }
 
 /*
-  Make all buttons have pointer cursor
+  Imposta cursore pointer per tutti i pulsanti
 */
 button {
   @apply cursor-pointer;
 }
 
 /*
-  Style for map space link
+  Stile per link spazio mappa
 */
 #space-link {
   @apply text-stone-900 hover:text-stone-100 m-0

@@ -5,10 +5,10 @@ import Image from 'next/image';
 import MapComponent from '@/components/MapComponent';
 import ObserverProvider from '@/components/ObserverProvider';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faRecycle, 
-  faMapMarkedAlt, 
-  faLeaf, 
+import {
+  faRecycle,
+  faMapMarkedAlt,
+  faLeaf,
   faTrash,
   faLightbulb,
   faMobileAlt,
@@ -39,8 +39,8 @@ const HomePage = () => {
         <section className="h-screen w-full relative z-20">
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-green-700"></div>
           <div className="absolute inset-0 opacity-10">
-  <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white to-transparent"></div>
-</div>
+            <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white to-transparent"></div>
+          </div>
           <div className="absolute flex flex-col gap-5 text-stone-100
                           justify-center items-center text-center inset-5 sm:inset-10 md:inset-15 lg:inset-20">
             <FontAwesomeIcon icon={faRecycle} className="text-8xl md:text-9xl mb-5 animate-pulse" />
@@ -52,14 +52,14 @@ const HomePage = () => {
               Trova i punti di raccolta più vicini, impara a smaltire correttamente i rifiuti e contribuisci a un futuro più sostenibile.
             </p>
             <div className="flex gap-5 mt-5">
-              <Link 
+              <Link
                 href="/collection-points"
                 className="px-8 py-4 bg-stone-100 text-emerald-600 font-bold rounded-2xl text-lg
                          hover:bg-yellow-300 hover:text-stone-900 transition-all duration-300
                          hover:scale-110 active:scale-95 shadow-lg">
                 Trova Punti Raccolta
               </Link>
-              <Link 
+              <Link
                 href="/waste-guide"
                 className="px-8 py-4 bg-transparent border-2 border-stone-100 text-stone-100 font-bold rounded-2xl text-lg
                          hover:bg-stone-100 hover:text-emerald-600 transition-all duration-300
@@ -85,7 +85,7 @@ const HomePage = () => {
 
           {/* Griglia Features */}
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-center'>
-            {/* Feature 1 */}
+            {/* Funzionalità 1 */}
             <div className='bg-stone-100 p-8 rounded-3xl shadow-md hover:shadow-xl transition-all duration-300
                           hover:-translate-y-2 intersect:motion-preset-slide-up intersect-once'>
               <FontAwesomeIcon icon={faMapMarkedAlt} className="text-6xl text-emerald-500 mb-5" />
@@ -93,7 +93,7 @@ const HomePage = () => {
               <p className='text-stone-600'>Trova i punti di raccolta più vicini con la nostra mappa in tempo reale</p>
             </div>
 
-            {/* Feature 2 */}
+            {/* Funzionalità 2 */}
             <div className='bg-stone-100 p-8 rounded-3xl shadow-md hover:shadow-xl transition-all duration-300
                           hover:-translate-y-2 intersect:motion-preset-slide-up intersect-once motion-delay-100'>
               <FontAwesomeIcon icon={faLightbulb} className="text-6xl text-yellow-500 mb-5" />
@@ -101,7 +101,7 @@ const HomePage = () => {
               <p className='text-stone-600'>Scopri come smaltire correttamente ogni tipo di rifiuto</p>
             </div>
 
-            {/* Feature 3 */}
+            {/* Funzionalità 3 */}
             <div className='bg-stone-100 p-8 rounded-3xl shadow-md hover:shadow-xl transition-all duration-300
                           hover:-translate-y-2 intersect:motion-preset-slide-up intersect-once motion-delay-200'>
               <FontAwesomeIcon icon={faBell} className="text-6xl text-red-500 mb-5" />
@@ -109,7 +109,7 @@ const HomePage = () => {
               <p className='text-stone-600'>Segnala problemi sui punti di raccolta e aiuta la comunità</p>
             </div>
 
-            {/* Feature 4 */}
+            {/* Funzionalità 4 */}
             <div className='bg-stone-100 p-8 rounded-3xl shadow-md hover:shadow-xl transition-all duration-300
                           hover:-translate-y-2 intersect:motion-preset-slide-up intersect-once motion-delay-300'>
               <FontAwesomeIcon icon={faUsers} className="text-6xl text-blue-500 mb-5" />
@@ -192,7 +192,7 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* Map */}
+        {/* Mappa */}
         <section id='map-section' className="w-full flex flex-col
                      h-[45rem] lg:h-[65rem]
                      mt-5 p-5 sm:p-10 md:p-15 lg:p-20 pb-5 gap-5 sm:gap-10 md:gap-15 lg:gap-20">
@@ -212,11 +212,11 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* Call to Action */}
+        {/* Chiamata all'azione */}
         <section className="w-full p-10 sm:p-20 bg-gradient-to-r from-emerald-500 to-green-600 text-stone-100 text-center">
           <h2 className='text-4xl md:text-6xl font-bold mb-5'>Inizia Oggi!</h2>
           <p className='text-xl md:text-2xl mb-10'>Unisciti a migliaia di persone che fanno la differenza</p>
-          <Link 
+          <Link
             href="/register"
             className="inline-block px-10 py-5 bg-stone-100 text-emerald-600 font-bold rounded-2xl text-xl
                      hover:bg-yellow-300 hover:text-stone-900 transition-all duration-300

@@ -64,8 +64,11 @@ SmartWaste/
 │   ├── app/                # Next.js App Router
 │   │   ├── api/            # API Endpoints
 │   │   ├── collection-points/ # Punti di raccolta
+│   │   ├── complete-profile/  # Completamento profilo
+│   │   ├── forgot-password/   # Recupero password
 │   │   ├── login/          # Login
 │   │   ├── register/       # Registrazione
+│   │   ├── reset-password/ # Reimpostazione password
 │   │   ├── profile/        # Profilo utente
 │   │   ├── waste-guide/    # Guida ai rifiuti
 │   │   ├── layout.tsx      # Layout principale

@@ -9,11 +9,11 @@ import { faArrowLeft, faArrowRight, faCheck, faEye, faSlash } from "@fortawesome
 import { useEffect, useState } from "react";
 import { handleFormSubmit } from "@/lib/handleFormSubmit";
 
-// Types for form values based on Zod schemas
+// Tipi per i valori del modulo basati sugli schemi Zod
 type UserFormValues = z.infer<typeof userRegisterSchema>;
 type UserOAuthFormValues = z.infer<typeof userRegisterSchemaOAuth>;
 
-// Props for the UserForm component
+// Props per il componente UserForm
 type UserFormProps = {
     email?: string;
     requiredFields?: {
@@ -34,16 +34,16 @@ export default function UserForm({
     buttons = "register",
 }:
     UserFormProps) {
-    // State for showing/hiding password
+    // Stato per mostrare/nascondere la password
     const [showPassword, setShowPassword] = useState(false);
-    // Get query parameters from the URL
+    // Ottieni parametri di query dall'URL
     const searchParams = useSearchParams();
-    // If both email and password are not required, use OAuth schema
+    // Se sia email che password non sono richieste, usa schema OAuth
     const useOAuth = !requiredFields?.email && !requiredFields?.password;
-    // Get email from props or URL
+    // Ottieni email da props o URL
     const userEmail = email ?? decodeURIComponent(searchParams.get("email") ?? "");
 
-    // Setup react-hook-form with Zod validation
+    // Configura react-hook-form con validazione Zod
     const {
         register,
         handleSubmit,
@@ -59,12 +59,12 @@ export default function UserForm({
 
     const router = useRouter();
 
-    // State for OAuth provider (google or github)
+    // Stato per provider OAuth (google o github)
     const [provider, setProvider] = useState<"google" | "github" | undefined>(
         undefined
     );
 
-    // On mount, get OAuth provider from localStorage
+    // Al montaggio, ottieni provider OAuth da localStorage
     useEffect(() => {
         const savedProvider = localStorage.getItem("oauth_provider");
         if (savedProvider === "google" || savedProvider === "github") {
@@ -72,7 +72,7 @@ export default function UserForm({
         }
     }, []);
 
-    // Handle form submission
+    // Gestisci invio modulo
     const onSubmit = (data: UserFormValues) =>
         handleFormSubmit({
             data,
@@ -86,7 +86,7 @@ export default function UserForm({
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className={`flex flex-col gap-5`}>
-            {/* Name and Surname fields */}
+            {/* Campi Nome e Cognome */}
             <div className="flex flex-col sm:flex-row gap-5">
                 {requiredFields?.name && (
                     <div className="w-full flex flex-col text-sm sm:text-base">
@@ -123,7 +123,7 @@ export default function UserForm({
                     </div>
                 )}
             </div>
-            {/* Email and Password fields (hidden if layout is col) */}
+            {/* Campi Email e Password (nascosti se il layout è col) */}
             <div className={`flex flex-col sm:flex-row gap-5 ${layout === "col" ? "hidden" : ""}`}>
                 {requiredFields?.email && (
                     <div className="w-full flex flex-col text-sm sm:text-base">
@@ -158,7 +158,7 @@ export default function UserForm({
                                 className="w-full p-2 border rounded-lg border-stone-300 focus:outline-none focus:ring-2 focus:ring-west-side-500 bg-stone-50"
                                 placeholder="Enter your password"
                             />
-                            {/* Toggle password visibility button */}
+                            {/* Pulsante per commutare visibilità password */}
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
@@ -173,11 +173,11 @@ export default function UserForm({
                 )}
             </div>
 
-            {/* Action buttons (register/confirm) */}
+            {/* Pulsanti azione (registra/conferma) */}
             <div className="flex gap-5 sm:mt-5">
                 {buttons === "register" && (
                     <>
-                        {/* Link to login page */}
+                        {/* Link alla pagina di login */}
                         <Link href={"/login"} className="w-full font-medium h-10 sm:h-12 flex justify-center items-center rounded-xl border-2 border-stone-900 text-stone-900
                                                         hover:bg-stone-900 hover:text-stone-100
                                                         active:bg-stone-900 active:text-stone-100
@@ -186,7 +186,7 @@ export default function UserForm({
                             Login
                             <FontAwesomeIcon icon={faArrowLeft} className="text-lg opacity-0" />
                         </Link>
-                        {/* Submit button for signup */}
+                        {/* Pulsante di invio per la registrazione */}
                         <button type="submit" className="w-full font-medium h-10 sm:h-12 flex justify-center items-center rounded-xl border-2 border-west-side-500 text-west-side-500
                                                         hover:bg-west-side-500 hover:text-stone-100
                                                         active:bg-west-side-500 active:text-stone-100

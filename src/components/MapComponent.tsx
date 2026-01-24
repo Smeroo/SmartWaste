@@ -7,59 +7,59 @@ import 'leaflet/dist/leaflet.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons/faArrowUpRightFromSquare';
 
-// MapComponent displays a Leaflet map with markers for collection points fetched from the API
+// MapComponent visualizza una mappa Leaflet con marker per i punti di raccolta recuperati dall'API
 const MapComponent: React.FC = () => {
     useEffect(() => {
-        let map: any = null; // Reference to the Leaflet map instance
+        let map: any = null; // Riferimento all'istanza della mappa Leaflet
 
         const initializeMap = async () => {
             if (typeof window !== 'undefined') {
                 const L = (await import('leaflet')).default;
 
-                // Custom icon for map markers (green for eco-friendly theme)
-                // Custom green icon for eco-friendly theme
-		const customIcon = new L.Icon({
-    		iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-    		shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-    		iconSize: [25, 41],
-    		iconAnchor: [12, 41],
-    		popupAnchor: [1, -34],
-    		shadowSize: [41, 41]
-		});
+                // Icona personalizzata per i marker (verde per tema eco-friendly)
+                // Icona verde personalizzata per tema eco-friendly
+                const customIcon = new L.Icon({
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                });
 
-                // Prevent re-initialization if map already exists
+                // Previene re-inizializzazione se la mappa esiste già
                 const mapContainer = document.getElementById('map');
                 if (mapContainer && (mapContainer as any)._leaflet_id) {
                     return;
                 }
 
-                // Initialize the map centered on Italy
+                // Inizializza la mappa centrata sull'Italia
                 map = L.map('map', {
                     zoomControl: true,
                     dragging: false,
                     scrollWheelZoom: false,
                 }).setView([43.1381, 13.0684], 6);
 
-                // Add dark tile layer
+                // Aggiungi layer tile scuro
                 L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
                     minZoom: 3,
                     maxZoom: 17,
                     attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                 }).addTo(map);
 
-                // Fetch collection points and add markers to the map
+                // Recupera punti di raccolta e aggiungi marker alla mappa
                 const fetchCollectionPoints = async () => {
                     try {
                         const response = await fetch('/api/collection-points');
                         const data = await response.json();
-                        
-                        // Ensure data is an array
+
+                        // Assicura che i dati siano un array
                         const collectionPoints = Array.isArray(data) ? data : (data.collectionPoints || []);
 
                         collectionPoints.forEach((point: any) => {
                             const { latitude, longitude } = point.address || {};
                             if (latitude && longitude) {
-                                // Popup content for each marker
+                                // Contenuto popup per ogni marker
                                 const popupContent = `
                                     <div class="flex gap-3">
                                         <a id="point-link" href="/collection-points/${point.id}" target="_blank" class="flex justify-center items-center aspect-square size-12 bg-stone-100 hover:bg-emerald-500 shadow-sm border-1 border-stone-900/10 rounded-md transition">
@@ -85,19 +85,19 @@ const MapComponent: React.FC = () => {
 
                 fetchCollectionPoints();
 
-                // Enable map controls (drag/zoom) on map click
+                // Abilita controlli mappa (drag/zoom) al click sulla mappa
                 const enableControls = () => {
                     map?.scrollWheelZoom.enable();
                     map?.dragging.enable();
                 };
 
-                // Disable map controls when clicking outside
+                // Disabilita controlli mappa cliccando fuori
                 const resetControls = () => {
                     map?.scrollWheelZoom.disable();
                     map?.dragging.disable();
                 };
 
-                // Listen for clicks outside the map to reset controls
+                // Ascolta click fuori dalla mappa per resettare i controlli
                 const handleClickOutside = (event: MouseEvent) => {
                     if (!(event.target as HTMLElement).closest('#map')) {
                         resetControls();
@@ -114,7 +114,7 @@ const MapComponent: React.FC = () => {
 
         initializeMap();
 
-        // Clean up the map when the component is unmounted
+        // Pulisci la mappa quando il componente viene smontato
         return () => {
             if (map) {
                 map.remove();
@@ -125,7 +125,7 @@ const MapComponent: React.FC = () => {
 
     return (
         <div className="flex w-full h-full">
-            {/* Map container for Leaflet */}
+            {/* Contenitore mappa per Leaflet */}
             <div id="map" className="w-full h-full rounded-2xl shadow-sm"></div>
         </div>
     );

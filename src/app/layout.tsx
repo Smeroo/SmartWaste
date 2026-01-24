@@ -15,7 +15,7 @@ import React, { useState } from "react";
 import RegisterSW from "@/components/RegisterSW";
 config.autoAddCss = false;
 
-// RootLayout wraps the app with session provider and layout
+// RootLayout avvolge l'app con il provider di sessione e il layout
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -28,12 +28,12 @@ export default function RootLayout({
   );
 }
 
-// InnerLayout contains the navigation, footer, and main content
+// InnerLayout contiene la navigazione, il footer e il contenuto principale
 function InnerLayout({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Scroll to top if already on homepage
+  // Scorri in alto se già nella home page
   const handleScrollToTop = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (typeof window !== "undefined" && window.location.pathname === "/") {
       e.preventDefault();
@@ -41,7 +41,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // Scroll to map section or navigate to homepage with anchor
+  // Scorri alla sezione mappa o naviga alla home page con ancora
   const handleScrollToMap = () => {
     if (typeof window !== "undefined") {
       const targetId = "map-section";
@@ -68,7 +68,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
       </head>
       <body className="bg-stone-200 text-stone-900 select-none">
         {/* <RegisterSW /> */}
-        {/* Navigation bar */}
+        {/* Barra di navigazione */}
         <nav className="z-1000 w-full p-5 fixed flex justify-center items-center gap-5">
           <div className="bg-stone-100/75 border-1 border-stone-100 px-2.5 backdrop-blur-xs shadow-sm rounded-3xl flex flex-col md:grid items-center transition duration-250 grid-cols-1 md:grid-cols-[1fr_auto_1fr] w-full lg:w-3/4 xl:w-2/3">
             <div className="justify-evenly items-center text-stone-900 font-medium text-lg gap-3 text-center hidden md:flex">
@@ -92,10 +92,10 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
                 Smart<span className="text-emerald-500">Waste</span>
               </Link>
 
-              {/* Mobile Menu */}
+              {/* Menu Mobile */}
               <div className={`w-full flex md:hidden flex-col gap-2 overflow-hidden transition-all ${menuOpen ? "max-h-64 mt-2" : "max-h-0"}`}>
                 <div className="flex justify-evenly items-center text-stone-900 font-medium text-lg gap-2 text-center">
-                  {/* First block: navigation */}
+                  {/* Primo blocco: navigazione */}
                   <button
                     onClick={e => { handleScrollToMap(); setMenuOpen(false); }}
                     className="rounded-2xl transition duration-250 w-full py-3 hover:bg-emerald-500 hover:text-stone-100 active:bg-emerald-500 active:text-stone-100">
@@ -108,7 +108,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
                     Punti Raccolta
                   </Link>
                 </div>
-                {/* Second block: auth/profile */}
+                {/* Secondo blocco: auth/profilo */}
                 <div className="flex justify-evenly items-center text-stone-900 font-medium text-lg gap-2 text-center">
                   {session ? (
                     <>
@@ -187,17 +187,17 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
 
         {children}
 
-        {/* Footer section */}
+        {/* Sezione Footer */}
         <footer className="z-1000 w-full bg-stone-900 text-stone-100 p-5 lg:p-20 mt-10">
           <div
             className="flex gap-10 lg:gap-5 justify-between
                           flex-col lg:flex-row items-start lg:items-center">
-            {/* Main Info */}
+            {/* Info Principali */}
             <div className="flex flex-col gap-5">
               <h1 className="text-4xl font-bold">
                 Smart<span className="text-emerald-400">Waste</span>
               </h1>
-              {/* Contact phone number */}
+              {/* Numero di telefono di contatto */}
               <p className="text-base lg:text-xl">
                 Chiamaci{" "}
                 <a
@@ -220,7 +220,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
                   info@smartwaste.com
                 </a>
               </p>
-              {/* Social media icons */}
+              {/* Icone social media */}
               <div className="flex gap-2">
                 <FontAwesomeIcon
                   icon={faXTwitter}
@@ -267,7 +267,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
               </div>
             </div>
 
-            {/* Newsletter subscription */}
+            {/* Iscrizione newsletter */}
             <div className="flex flex-col justify-center w-full lg:w-auto gap-5 lg:gap-10">
               <h2 className="font-bold text-lg lg:text-3xl">Iscriviti alla newsletter</h2>
               <input
@@ -276,7 +276,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
                 id="newsletter"
                 className="w-full outline-0 border-2 border-stone-100 rounded-2xl p-4 text-stone-900"
               />
-              {/* email input management */}
+              {/* gestione input email */}
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => {

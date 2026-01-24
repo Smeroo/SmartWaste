@@ -1,7 +1,7 @@
 import NextAuth, { DefaultSession, DefaultUser } from "next-auth";
 import { User } from "@prisma/user";
 
-// Extend NextAuth types to include custom user properties
+// Estendi i tipi di NextAuth per includere proprietà utente personalizzate
 declare module "next-auth" {
   interface Session {
     user: {

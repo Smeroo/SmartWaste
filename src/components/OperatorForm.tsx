@@ -15,11 +15,11 @@ import {
 import { useEffect, useState } from "react";
 import { handleFormSubmit } from "@/lib/handleFormSubmit";
 
-// Define types for form values based on Zod schemas
+// Definisci i tipi per i valori del modulo basati sugli schemi Zod
 type OperatorFormValues = z.infer<typeof operatorRegisterSchema>;
 type OperatorOAuthFormValues = z.infer<typeof operatorRegisterSchemaOAuth>;
 
-// Define props for the OperatorForm component
+// Definisci le props per il componente OperatorForm
 type OperatorFormProps = {
     email?: string;
     requiredFields?: {
@@ -37,19 +37,19 @@ export default function OperatorForm({
     layout = "row",
     buttons = "register",
 }: OperatorFormProps) {
-    // State to toggle password visibility
+    // Stato per commutare la visibilità della password
     const [showPassword, setShowPassword] = useState(false);
 
-    // Get query parameters from the URL
+    // Ottieni parametri di query dall'URL
     const searchParams = useSearchParams();
 
-    // Determine if OAuth is used based on required fields
+    // Determina se OAuth è usato in base ai campi obbligatori
     const useOAuth = !requiredFields?.email && !requiredFields?.password;
 
-    // Get user email from props or URL
+    // Ottieni email utente da props o URL
     const userEmail = email ?? decodeURIComponent(searchParams.get("email") ?? "");
 
-    // Initialize react-hook-form with Zod validation
+    // Inizializza react-hook-form con validazione Zod
     const {
         register,
         handleSubmit,
@@ -65,12 +65,12 @@ export default function OperatorForm({
 
     const router = useRouter();
 
-    // State to store OAuth provider (google or github)
+    // Stato per memorizzare il provider OAuth (google o github)
     const [provider, setProvider] = useState<"google" | "github" | undefined>(
         undefined
     );
 
-    // On mount, retrieve OAuth provider from localStorage
+    // Al montaggio, recupera il provider OAuth da localStorage
     useEffect(() => {
         const savedProvider = localStorage.getItem("oauth_provider");
         if (savedProvider === "google" || savedProvider === "github") {
@@ -78,7 +78,7 @@ export default function OperatorForm({
         }
     }, []);
 
-    // Handle form submission
+    // Gestisci invio modulo
     const onSubmit = (data: OperatorFormValues) =>
         handleFormSubmit({
             data,
@@ -92,7 +92,7 @@ export default function OperatorForm({
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className={`flex flex-col gap-5`}>
-            {/* Name and VAT fields */}
+            {/* Campi Nome e P.IVA (VAT) */}
             <div className="flex flex-col sm:flex-row gap-5">
                 {requiredFields?.name && (
                     <div className="w-full flex flex-col text-sm sm:text-base">
@@ -113,7 +113,7 @@ export default function OperatorForm({
                 )}
 
             </div>
-            {/* Email and Password fields, hidden if layout is "col" */}
+            {/* Campi Email e Password, nascosti se il layout è "col" */}
             <div className={`flex flex-col sm:flex-row gap-5 ${layout === "col" ? "hidden" : ""}`}>
                 {requiredFields?.email && (
                     <div className="w-full flex flex-col text-sm sm:text-base">
@@ -148,7 +148,7 @@ export default function OperatorForm({
                                 className="w-full p-2 border rounded-lg border-stone-300 focus:outline-none focus:ring-2 focus:ring-west-side-500 bg-stone-50"
                                 placeholder="Enter operator password"
                             />
-                            {/* Button to toggle password visibility */}
+                            {/* Pulsante per commutare visibilità password */}
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
@@ -163,11 +163,11 @@ export default function OperatorForm({
                 )}
             </div>
 
-            {/* Action buttons */}
+            {/* Pulsanti azione */}
             <div className="flex gap-5 sm:mt-5">
                 {buttons === "register" && (
                     <>
-                        {/* Link to login page */}
+                        {/* Link alla pagina di login */}
                         <Link href={"/login"} className="w-full font-medium h-10 sm:h-12 flex justify-center items-center rounded-xl border-2 border-stone-900 text-stone-900
                                                         hover:bg-stone-900 hover:text-stone-100
                                                         active:bg-stone-900 active:text-stone-100
@@ -176,7 +176,7 @@ export default function OperatorForm({
                             Login
                             <FontAwesomeIcon icon={faArrowLeft} className="text-lg opacity-0" />
                         </Link>
-                        {/* Submit button for signup */}
+                        {/* Pulsante di invio per la registrazione */}
                         <button type="submit" className="w-full font-medium h-10 sm:h-12 flex justify-center items-center rounded-xl border-2 border-west-side-500 text-west-side-500 
                                                         hover:bg-west-side-500 hover:text-stone-100
                                                         active:bg-west-side-500 active:text-stone-100

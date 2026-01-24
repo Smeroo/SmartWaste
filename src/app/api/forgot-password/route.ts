@@ -9,13 +9,13 @@ export async function POST(req: Request) {
 
     const user = await prisma.user.findUnique({ where: { email } });
 
-    // For privacy and security, do not reveal if the email doesn't exist in the system
+    // Per privacy e sicurezza, non rivelare se l'email non esiste nel sistema
     if (!user) return NextResponse.json({}, { status: 200 });
 
     if (!user.password) return NextResponse.json({}, { status: 200 });
 
     const token = randomBytes(32).toString("hex");
-    const expires = new Date(Date.now() + 1000 * 60 * 60); // 1 hour
+    const expires = new Date(Date.now() + 1000 * 60 * 60); // 1 ora
 
     await prisma.user.update({
       where: { email },

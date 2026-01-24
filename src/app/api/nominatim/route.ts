@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Handles GET requests to /api/nominatim
-// Return suggestions based on the query
+// Gestisce richieste GET a /api/nominatim
+// Restituisce suggerimenti basati sulla query
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     var query = searchParams.get("q");
 
-    // Validate the query parameter
+    // Valida il parametro query
     if (!query) {
         return NextResponse.json(
             { error: "Query parameter 'q' is required" },
@@ -15,9 +15,9 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-        // Fetch data from Nominatim API
+        // Recupera dati dall'API di Nominatim
         const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=3&addressdetails=1`);
-        
+
         if (!response.ok) {
             throw new Error("Failed to fetch data from Nominatim");
         }

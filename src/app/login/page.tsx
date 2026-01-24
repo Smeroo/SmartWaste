@@ -22,7 +22,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-5 py-28 bg-gradient-to-br from-emerald-500 to-green-700">
       <div className="bg-stone-100 rounded-3xl shadow-2xl p-8 md:p-12 w-full max-w-md">
-        {/* Header */}
+        {/* Intestazione */}
         <div className="text-center mb-8">
           <div className="inline-block bg-emerald-500 p-4 rounded-full mb-4">
             <FontAwesomeIcon icon={faLeaf} className="text-4xl text-white" />
@@ -33,7 +33,7 @@ export default function LoginPage() {
           <p className="text-stone-600">Accedi al tuo account</p>
         </div>
 
-        {/* Credentials Form */}
+        {/* Modulo Credenziali */}
         <form action={credentialsAction} className="space-y-5">
           {/* Email */}
           <div>
@@ -80,7 +80,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Forgot Password Link */}
+          {/* Link Password Dimenticata */}
           <div className="text-right">
             <Link
               href="/forgot-password"
@@ -90,7 +90,7 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          {/* Error Message */}
+          {/* Messaggio di Errore */}
           {errorMessage && (
             <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-3">
               <p className="text-red-600 text-center font-medium text-sm">
@@ -99,9 +99,9 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Action Buttons */}
+          {/* Pulsanti Azione */}
           <div className="flex flex-col sm:flex-row gap-4 mt-8">
-            {/* Signup Button */}
+            {/* Pulsante Registrazione */}
             <Link
               href="/register"
               className="w-full py-4 flex justify-center items-center rounded-2xl 
@@ -116,7 +116,7 @@ export default function LoginPage() {
               Registrati
             </Link>
 
-            {/* Login Button */}
+            {/* Pulsante Accesso */}
             <button
               type="submit"
               className="w-full py-4 flex justify-center items-center rounded-2xl 
@@ -133,7 +133,7 @@ export default function LoginPage() {
           </div>
         </form>
 
-        {/* Register Link */}
+        {/* Link Registrazione */}
         <div className="text-center mt-6">
           <p className="text-stone-600">
             Non hai un account?{' '}

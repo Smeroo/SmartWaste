@@ -175,7 +175,7 @@ const WasteGuidePage = () => {
 
   return (
     <div className="min-h-screen pt-28 pb-10 px-5 sm:px-10 md:px-15 lg:px-20">
-      {/* Header */}
+      {/* Intestazione */}
       <div className="mb-10 text-center">
         <div className="inline-block bg-emerald-500 p-4 rounded-full mb-4">
           <FontAwesomeIcon icon={faRecycle} className="text-5xl text-white" />
@@ -208,7 +208,7 @@ const WasteGuidePage = () => {
         </div>
       </div>
 
-      {/* Grid Categorie */}
+      {/* Griglia Categorie */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         {filteredCategories.map((category) => (
           <div
@@ -218,7 +218,7 @@ const WasteGuidePage = () => {
                        cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl
                        ${selectedCategory === category.id ? 'ring-4 ring-emerald-500 scale-105' : ''}`}
           >
-            {/* Icon e Titolo */}
+            {/* Icona e Titolo */}
             <div className="flex items-center gap-4 mb-4">
               <div className={`${category.bgColor} p-4 rounded-full`}>
                 <FontAwesomeIcon icon={category.icon} className="text-3xl text-white" />
@@ -315,7 +315,7 @@ const WasteGuidePage = () => {
         </div>
       )}
 
-      {/* Footer info */}
+      {/* Info Footer */}
       <div className="mt-16 text-center max-w-3xl mx-auto">
         <div className="bg-gradient-to-r from-emerald-500 to-green-600 rounded-3xl p-8 text-white">
           <h3 className="text-2xl font-bold mb-3">🌍 Perché differenziare?</h3>

@@ -57,7 +57,7 @@ const CreateCollectionPointModal: React.FC<{ isOpen: boolean; onClose: () => voi
 
     const fetchWasteTypes = async () => {
         try {
-            const res = await fetch('/api/services'); // Ideally rename this endpoint too, but sticking to plan
+            const res = await fetch('/api/services'); // Idealmente rinominare anche questo endpoint, ma attenersi al piano
             if (res.ok) {
                 const data = await res.json();
                 setWasteTypes(data);
@@ -118,7 +118,7 @@ const CreateCollectionPointModal: React.FC<{ isOpen: boolean; onClose: () => voi
         setLoading(true);
 
         try {
-            // Need to get Operator ID from session. Assuming session.user.id is the userId which is also operatorId
+            // Necessario ottenere l'ID Operatore dalla sessione. Assumendo che session.user.id sia lo userId che è anche operatorId
             const operatorId = session?.user?.id;
 
             if (!operatorId) {
@@ -167,7 +167,7 @@ const CreateCollectionPointModal: React.FC<{ isOpen: boolean; onClose: () => voi
                 <div className="overflow-y-auto p-6 flex-1">
                     <form onSubmit={handleSubmit} className="flex flex-col gap-8">
 
-                        {/* Basic Info */}
+                        {/* Informazioni Base */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="flex flex-col gap-2">
                                 <label className="font-semibold text-stone-700">Nome Punto di Raccolta</label>
@@ -194,7 +194,7 @@ const CreateCollectionPointModal: React.FC<{ isOpen: boolean; onClose: () => voi
                             </div>
                         </div>
 
-                        {/* Address Search */}
+                        {/* Ricerca Indirizzo */}
                         <div className="flex flex-col gap-2 relative">
                             <label className="font-semibold text-stone-700">Indirizzo (Cerca e Seleziona)</label>
                             <input
@@ -222,7 +222,7 @@ const CreateCollectionPointModal: React.FC<{ isOpen: boolean; onClose: () => voi
                             </div>
                         </div>
 
-                        {/* Description */}
+                        {/* Descrizione */}
                         <div className="flex flex-col gap-2">
                             <label className="font-semibold text-stone-700">Descrizione</label>
                             <textarea
@@ -233,7 +233,7 @@ const CreateCollectionPointModal: React.FC<{ isOpen: boolean; onClose: () => voi
                             />
                         </div>
 
-                        {/* Waste Types */}
+                        {/* Tipi di Rifiuto */}
                         <div className="flex flex-col gap-2">
                             <label className="font-semibold text-stone-700">Rifiuti Accettati</label>
                             <div className="flex flex-wrap gap-2 bg-stone-50 p-4 rounded-xl border">
@@ -254,7 +254,7 @@ const CreateCollectionPointModal: React.FC<{ isOpen: boolean; onClose: () => voi
                             </div>
                         </div>
 
-                        {/* Schedule (Simplified) */}
+                        {/* Orario (Semplificato) */}
                         <div className="flex flex-col gap-4 border-t pt-4">
                             <div className="flex items-center gap-3">
                                 <label className="font-semibold text-stone-700">Sempre Aperto (24/7)</label>

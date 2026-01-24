@@ -6,17 +6,17 @@ async function getUserFromDb(email: string, plainPassword: string) {
     throw new Error("Email must be a string.");
   }
 
-  // Find the user by email
+  // Trova l'utente tramite email
   const user = await prisma.user.findUnique({
     where: { email },
   });
 
-  // Check if the user exists and has a password
+  // Controlla se l'utente esiste e ha una password
   if (!user || !user.password) {
     return null;
   }
 
-  // Compare the provided password with the stored hashed password
+  // Confronta la password fornita con la password hashata memorizzata
   const isPasswordValid = await bcrypt.compare(plainPassword, user.password);
 
   if (!isPasswordValid) {

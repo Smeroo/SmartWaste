@@ -2,36 +2,33 @@ import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faTrashCan, faXmark } from '@fortawesome/free-solid-svg-icons';
 
-// Modal for editing user profile information
+// Modale per modificare le informazioni del profilo utente
 const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void, userData: any, userRole: String, onSubmitComplete: (status: number | null) => void }> = ({ isOpen, onClose, userData, userRole, onSubmitComplete }) => {
-    // State to manage modal visibility and transitions
+    // Stato per gestire visibilità e transizioni del modale
     const [isClosing, setIsClosing] = useState(false);
-    const [isVisible, setIsVisible] = useState(false); // For entry transition
-    // State for form data fields
+    const [isVisible, setIsVisible] = useState(false); // Per la transizione di ingresso
+    // Stato per i campi dati del modulo
     const [formData, setFormData] = useState<{
         name: string;
         surname?: string;
         cellphone?: string;
         telephone?: string;
-        vatNumber?: string;
     }>({
         name: '',
         surname: userRole === 'USER' ? '' : undefined,
         cellphone: userRole === 'USER' ? '' : undefined,
         telephone: userRole === 'OPERATOR' ? '' : undefined,
-        vatNumber: userRole === 'OPERATOR' ? '' : undefined,
     });
 
-    // Error state for required fields
+    // Stato di errore per i campi obbligatori
     const [errors, setErrors] = useState<{
         name?: boolean;
         surname?: boolean;
         cellphone?: boolean;
         telephone?: boolean;
-        vatNumber?: boolean;
     }>({});
 
-    // Clears all form fields and errors
+    // Pulisce tutti i campi del modulo e gli errori
     const handleClearFields = () => {
         setErrors({});
         setFormData({
@@ -39,12 +36,11 @@ const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void, userDat
             surname: userRole === 'USER' ? '' : undefined,
             cellphone: userRole === 'USER' ? '' : undefined,
             telephone: userRole === 'OPERATOR' ? '' : undefined,
-            vatNumber: userRole === 'OPERATOR' ? '' : undefined,
         });
     }
 
-    // Validates required fields and sets error state
-    // Add more validation rules as needed
+    // Valida i campi obbligatori e imposta lo stato di errore
+    // Aggiungi altre regole di validazione se necessario
     const validateForm = () => {
         const newErrors: typeof errors = {};
         if (formData.name.trim() === '') newErrors.name = true;
@@ -54,12 +50,12 @@ const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void, userDat
         return Object.keys(newErrors).length === 0;
     };
 
-    // Handles form submission and sends data to the server
+    // Gestisce l'invio del modulo e invia i dati al server
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validateForm()) {
             console.error("Form validation failed", errors);
-            return; // Prevent submission if validation fails
+            return; // Previeni l'invio se la validazione fallisce
         }
         try {
             const response = await fetch('/api/profile', {
@@ -73,39 +69,38 @@ const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void, userDat
             if (!response.ok) {
                 throw new Error("Failed to update profile");
             }
-            onSubmitComplete(response.status || null); // Indicate success
+            onSubmitComplete(response.status || null); // Indica successo
         } catch (error) {
             console.error("Error updating profile", error);
         }
     }
 
-    // Initializes form data with userData when modal opens
+    // Inizializza i dati del modulo con userData all'apertura del modale
     const initializeFormData = () => {
         setFormData({
             name: userData.name || '',
             surname: userRole === 'USER' ? userData.surname || '' : undefined,
             cellphone: userRole === 'USER' ? userData.cellphone || '' : undefined,
             telephone: userRole === 'OPERATOR' ? userData.telephone || '' : undefined,
-            vatNumber: userRole === 'OPERATOR' ? userData.vatNumber || '' : undefined,
         });
     };
 
-    // Handle modal open/close transitions and initialize form data
+    // Gestisci transizioni apertura/chiusura modale e inizializza dati modulo
     useEffect(() => {
         let openTimeout: NodeJS.Timeout | undefined;
         let closeTimeout: NodeJS.Timeout | undefined;
         if (isOpen) {
-            initializeFormData(); // Initialize form data when modal opens
-            setIsVisible(false); // Reset
+            initializeFormData(); // Inizializza dati modulo quando il modale si apre
+            setIsVisible(false); // Resetta
             openTimeout = setTimeout(() => {
                 setIsVisible(true);
-            }, 10); // Wait a tick to trigger transition
+            }, 10); // Aspetta un tick per attivare la transizione
         } else {
             setIsClosing(true);
             setIsVisible(false);
             closeTimeout = setTimeout(() => {
                 setIsClosing(false);
-            }, 300); // Duration of the transition in milliseconds
+            }, 300); // Durata della transizione in millisecondi
         }
         return () => {
             if (openTimeout) clearTimeout(openTimeout);
@@ -113,20 +108,20 @@ const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void, userDat
         };
     }, [isOpen]);
 
-    // If modal is not open and not closing, render nothing
+    // Se il modale non è aperto e non si sta chiudendo, non visualizzare nulla
     if (!isOpen && !isClosing) return null;
 
-    // Red dot error indicator for required fields
+    // Indicatore punto rosso per campi obbligatori
     const errorDot = <div className="w-2 h-2 mx-2 rounded-full bg-red-500 animate-pulse" />;
 
     return (
         <div className={`fixed inset-0 flex items-center justify-center z-9999 transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}
                         px-5 sm:px-10 md:px-15 lg:px-20 py-5`}>
-            {/* Modal background overlay */}
+            {/* Overlay sfondo modale */}
             <div className="w-screen h-screen bg-stone-900/75 absolute"
                 onClick={() => {
                     setIsClosing(true);
-                    setTimeout(onClose, 300); // Synchronize with the transition duration
+                    setTimeout(onClose, 300); // Sincronizza con la durata della transizione
                 }}
             ></div>
             <div
@@ -149,7 +144,7 @@ const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void, userDat
                             />
                         </div>
 
-                        {/* Surname field for USER role */}
+                        {/* Campo Cognome per ruolo USER */}
                         {userRole === 'USER' && (
                             <div className="w-full flex flex-col">
                                 <label className="flex items-center text-sm md:text-base font-medium pl-1 pb-1 text-stone-900">
@@ -166,7 +161,7 @@ const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void, userDat
                             </div>
                         )}
                     </div>
-                    {/* Cellphone for USER, Telephone for OPERATOR */}
+                    {/* Cellulare per USER, Telefono per OPERATOR */}
                     <div className="w-full flex flex-col">
                         <label className="flex items-center text-sm md:text-base font-medium pl-1 pb-1 text-stone-900">
                             {userRole === 'USER' ? 'Cellphone' : 'Telephone'}
@@ -183,32 +178,9 @@ const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void, userDat
                         />
                     </div>
 
-                    {/* VAT number for OPERATOR role */}
-                    {userRole === 'OPERATOR' && (
-                        <div className="w-full flex flex-col">
-                            <label className="flex items-center text-sm md:text-base font-medium pl-1 pb-1 text-stone-900">
-                                VAT
-                                {errors.vatNumber && errorDot}
-                            </label>
-                            <input
-                                type="tel"
-                                id="vatNumber"
-                                value={formData.vatNumber}
-                                onChange={(e) => setFormData({ ...formData, vatNumber: e.target.value })}
-                                required
-                                pattern="^[A-Z]{2}\d{11}$"
-                                className="p-2 border rounded-lg border-stone-300 focus:outline-none focus:ring-2 focus:ring-west-side-500 bg-stone-50"
-                                onInput={(e) => {
-                                    const target = e.target as HTMLInputElement;
-                                    target.value = target.value.toUpperCase();
-                                }}
-                            />
-                        </div>
-                    )}
-
-                    {/* Action Buttons */}
+                    {/* Pulsanti Azione */}
                     <div className="flex justify-between">
-                        {/* Clear fields button */}
+                        {/* Pulsante Pulisci campi */}
                         <button type='button'
                             onClick={handleClearFields}
                             className='flex justify-start items-center rounded-md ring-2 ring-red-500 bg-stone-100 hover:bg-red-500 active:bg-red-500 text-red-500 hover:text-stone-100 active:text-stone-100 shadow-sm transition-all duration-150 overflow-hidden
@@ -219,7 +191,7 @@ const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void, userDat
                             <p className='whitespace-nowrap text-xl text-start w-full opacity-0 group-hover:opacity-100 group-active:opacity-100 duration-150'>Clear fields</p>
                         </button>
 
-                        {/* Confirm profile button */}
+                        {/* Pulsante Conferma profilo */}
                         <button type='submit' className='flex justify-end items-center rounded-md ring-2 ring-west-side-500 bg-stone-100 hover:bg-west-side-500 active:bg-west-side-500 text-west-side-500 hover:text-stone-100 active:text-stone-100 shadow-sm transition-all duration-150 overflow-hidden
                                                                 w-10 hover:w-46 active:w-46 ease-out active:scale-90 hover:scale-110 origin-right group'>
                             <p className='whitespace-nowrap text-xl text-end w-full opacity-0 group-hover:opacity-100 group-active:opacity-100 duration-150'>Confirm profile</p>
@@ -229,12 +201,12 @@ const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void, userDat
                         </button>
                     </div>
                 </form>
-                {/* Close button for modal */}
+                {/* Pulsante Chiudi per modale */}
                 <button
                     className="flex justify-center items-center absolute size-10 top-5 right-5 bg-stone-100 hover:bg-red-500 active:bg-red-500 border-1 border-stone-900/10 rounded-lg shadow-sm text-stone-900 hover:text-stone-100 active:text-stone-100 text-2xl transition"
                     onClick={() => {
                         setIsClosing(true);
-                        setTimeout(onClose, 300); // Synchronize with the transition duration
+                        setTimeout(onClose, 300); // Sincronizza con la durata della transizione
                     }}>
                     <FontAwesomeIcon icon={faXmark} />
                 </button>

@@ -2,7 +2,7 @@ import { auth } from "@/auth"
 import { NextResponse } from 'next/server'
 import { getUserProfile, updateUserProfile, deleteUserAccount } from '@/services/userService'
 
-// Handles GET requests to /api/profile
+// Gestisce richieste GET a /api/profile
 export async function GET() {
   try {
     const session = await auth();
@@ -23,7 +23,7 @@ export async function GET() {
   }
 }
 
-// Handles PUT requests to /api/profile
+// Gestisce richieste PUT a /api/profile
 export async function PUT(request: Request) {
   try {
     const session = await auth();
@@ -45,7 +45,7 @@ export async function PUT(request: Request) {
   }
 }
 
-// Handles DELETE requests to /api/profile
+// Gestisce richieste DELETE a /api/profile
 export async function DELETE() {
   try {
     const session = await auth();

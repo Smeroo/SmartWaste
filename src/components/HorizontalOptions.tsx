@@ -2,18 +2,18 @@
 
 import { useState } from 'react';
 
-// Props for the HorizontalOptions component
+// Props per il componente HorizontalOptions
 interface HorizontalOptionsProps {
-    options: string[]; // List of option labels
-    initialSelected?: number; // Index of initially selected option
-    backgroundColor?: string; // Background color for the moving rectangle
-    optionClassName?: string; // Additional class for each option
-    containerClassName?: string; // Additional class for the container
-    layout?: 'row' | 'grid'; // Layout type: row or grid
-    onOptionSelect?: (selectedOption: string) => void; // Callback when an option is selected
+    options: string[]; // Lista delle etichette delle opzioni
+    initialSelected?: number; // Indice dell'opzione selezionata inizialmente
+    backgroundColor?: string; // Colore di sfondo per il rettangolo mobile
+    optionClassName?: string; // Classe aggiuntiva per ogni opzione
+    containerClassName?: string; // Classe aggiuntiva per il contenitore
+    layout?: 'row' | 'grid'; // Tipo di layout: riga o griglia
+    onOptionSelect?: (selectedOption: string) => void; // Callback quando viene selezionata un'opzione
 }
 
-// HorizontalOptions component for displaying selectable options in a row or grid
+// Componente HorizontalOptions per visualizzare opzioni selezionabili in riga o griglia
 const HorizontalOptions: React.FC<HorizontalOptionsProps> = ({
     options,
     initialSelected = 0,
@@ -23,10 +23,10 @@ const HorizontalOptions: React.FC<HorizontalOptionsProps> = ({
     layout = 'row',
     onOptionSelect,
 }) => {
-    // State for the currently selected option index
+    // Stato per l'indice dell'opzione attualmente selezionata
     const [selectedOption, setSelectedOption] = useState<number>(initialSelected);
 
-    // Handles click on an option
+    // Gestisce il click su un'opzione
     const handleOptionClick = (index: number) => {
         setSelectedOption(index);
         if (onOptionSelect) {
@@ -34,13 +34,13 @@ const HorizontalOptions: React.FC<HorizontalOptionsProps> = ({
         }
     };
 
-    // Style for the moving rectangle in row layout
+    // Stile per il rettangolo mobile nel layout a riga
     const getRowRectangleStyle = () => ({
         width: `${100 / options.length}%`,
         transform: `translateX(${selectedOption * 100}%)`,
     });
 
-    // Style for the moving rectangle in grid layout
+    // Stile per il rettangolo mobile nel layout a griglia
     const getGridRectangleStyle = () => {
         let column = selectedOption % 3;
         let row = Math.floor(selectedOption / 3);
@@ -69,11 +69,11 @@ const HorizontalOptions: React.FC<HorizontalOptionsProps> = ({
         };
     };
 
-    // Render row layout
+    // Renderizza layout a riga
     if (layout === 'row') {
         return (
-            <div className={`relative grid grid-cols-5 items-center ${containerClassName}`}> {/* Uses grid with 5 columns */}
-                {/* Colored rectangle that moves under the selected option */}
+            <div className={`relative grid grid-cols-5 items-center ${containerClassName}`}> {/* Usa griglia con 5 colonne */}
+                {/* Rettangolo colorato che si muove sotto l'opzione selezionata */}
                 <div
                     className={`absolute top-0 left-0 h-full rounded-2xl transition-all duration-500 ${backgroundColor}`}
                     style={{
@@ -82,7 +82,7 @@ const HorizontalOptions: React.FC<HorizontalOptionsProps> = ({
                     }}
                 ></div>
 
-                {/* Option labels */}
+                {/* Etichette opzioni */}
                 {options.map((option, index) => (
                     <div
                         key={index}
@@ -95,7 +95,7 @@ const HorizontalOptions: React.FC<HorizontalOptionsProps> = ({
         );
     }
 
-    // Render grid layout
+    // Renderizza layout a griglia
     if (layout === 'grid') {
         return (
             <div className={`relative grid grid-cols-3 grid-rows-2 gap-2 items-center ${containerClassName}`}>
@@ -117,7 +117,7 @@ const HorizontalOptions: React.FC<HorizontalOptionsProps> = ({
         );
     }
 
-    // Fallback if layout is not recognized
+    // Fallback se il layout non è riconosciuto
     return null;
 };
 

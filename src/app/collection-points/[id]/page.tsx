@@ -15,7 +15,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 
-// Reuse interfaces (should ideally be in a shared type file)
+// Riutilizza interfacce (interfacce dovrebbero idealmente essere in un file type condiviso)
 interface Address {
     street: string;
     number?: string;
@@ -69,7 +69,7 @@ interface CollectionPoint {
     accessibility: string;
     capacity?: string;
     isActive: boolean;
-    images?: string; // JSON string or array?
+    images?: string; // Stringa JSON o array?
     operator?: Operator;
 }
 
@@ -103,7 +103,7 @@ const CollectionPointDetailsPage = () => {
         fetchPoint();
     }, [id]);
 
-    // Helper for Waste Type Colors
+    // Helper per i colori dei tipi di rifiuto
     const getWasteTypeColor = (name: string) => {
         const upperName = name.toUpperCase().trim();
         if (upperName.includes('PLASTIC') || upperName.includes('PLASTICA')) return 'bg-yellow-100 text-yellow-700 border-yellow-400';
@@ -147,10 +147,10 @@ const CollectionPointDetailsPage = () => {
 
     return (
         <div className="min-h-screen pb-20 bg-stone-50">
-            {/* Hero Image */}
+            {/* Immagine Hero */}
             <div className="relative h-60 md:h-80 lg:h-96 w-full">
                 <div className="absolute inset-0 bg-stone-300">
-                    {/* If we had Image component with valid src, we'd use it. For now, using a colored placeholder if no image */}
+                    {/* Se avessimo un componente Image con src valido, lo useremmo. Per ora, uso placeholder colorato se non c'è immagine */}
                     {images.length > 0 ? (
                         <img src={heroImage} alt={point.name} className="w-full h-full object-cover" />
                     ) : (
@@ -175,9 +175,9 @@ const CollectionPointDetailsPage = () => {
             <div className="px-5 sm:px-10 md:px-20 max-w-7xl mx-auto -mt-10 relative z-10">
                 <div className="bg-white rounded-3xl shadow-xl p-6 md:p-10 flex flex-col gap-10">
 
-                    {/* Info Grid */}
+                    {/* Griglia Info */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        {/* Left Column: Description & Waste Types */}
+                        {/* Colonna Sinistra: Descrizione e Tipi di Rifiuto */}
                         <div className="flex flex-col gap-8">
                             <div>
                                 <h2 className="text-xl font-bold mb-3 text-stone-800">Descrizione</h2>
@@ -191,7 +191,7 @@ const CollectionPointDetailsPage = () => {
                                 <div className="flex flex-wrap gap-3">
                                     {point.wasteTypes.map(type => (
                                         <div key={type.id} className={`border-2 rounded-xl p-3 flex items-center gap-3 ${getWasteTypeColor(type.name)} bg-opacity-50`}>
-                                            {/* FontAwesome parsing for icon string would be complex without mapping, skipping icon for now or using generic */}
+                                            {/* Parsing FontAwesome per stringa icona sarebbe complesso senza mapping, salto icona per ora o uso generica */}
                                             <FontAwesomeIcon icon={faRecycle} />
                                             <div>
                                                 <span className="font-bold block">{translateWasteType(type.name)}</span>
@@ -210,7 +210,7 @@ const CollectionPointDetailsPage = () => {
                             )}
                         </div>
 
-                        {/* Right Column: Address, Schedule, Operator */}
+                        {/* Colonna Destra: Indirizzo, Orario, Operatore */}
                         <div className="flex flex-col gap-8">
                             <div className="bg-stone-50 p-6 rounded-2xl border border-stone-100">
                                 <h2 className="text-xl font-bold mb-5 text-stone-800 flex items-center gap-2">
@@ -265,7 +265,7 @@ const CollectionPointDetailsPage = () => {
                         </div>
                     </div>
 
-                    {/* Operator Info */}
+                    {/* Informazioni Operatore */}
                     {point.operator && (
                         <div className="border-t border-stone-100 pt-8 mt-4">
                             <h2 className="text-xl font-bold mb-5 text-stone-800">Gestito da</h2>

@@ -83,7 +83,7 @@ const ProfilePage = () => {
 
   return (
     <div className="min-h-screen pt-28 pb-10 px-5 sm:px-10 md:px-15 lg:px-20">
-      {/* Header */}
+      {/* Intestazione */}
       <div className="mb-10">
         <h1 className="text-4xl md:text-6xl font-bold mb-3">
           Il Tuo <span className="text-emerald-500">Profilo</span>
