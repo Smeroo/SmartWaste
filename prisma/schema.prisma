@@ -25,6 +25,8 @@ model CollectionPoint {
   capacity      String?
   createdAt     DateTime             @default(now())
   updatedAt     DateTime             @updatedAt
+  avgRating     Float?
+  reviews       Review[]
 }
 
 model Address {
@@ -117,6 +119,7 @@ model User {
   operator         Operator?
   accounts         Account[]
   sessions         Session[]
+  reviews          Review[]
 }
 
 model Operator {
@@ -124,7 +127,7 @@ model Operator {
   user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   organizationName String
   vatNumber        String?
-  telephone        String
+  telephone        String?
   website          String?
   collectionPoints CollectionPoint[]
 }
@@ -177,4 +180,17 @@ enum OAuthProvider {
   GOOGLE
   GITHUB
   APP
+}
+
+model Review {
+  id              Int             @id @default(autoincrement())
+  rating          Int
+  comment         String?
+  createdAt       DateTime        @default(now())
+  
+  spaceId         Int
+  collectionPoint CollectionPoint @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  
+  userId          String
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

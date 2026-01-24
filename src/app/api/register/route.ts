@@ -13,9 +13,7 @@ export async function POST(req: Request) {
       role, // USER || OPERATOR
       name,
       surname, // for User
-      cellphone,
       vatNumber, // for Operator
-      telephone, // for Operator
     } = body;
 
     // validation of required fields
@@ -32,19 +30,16 @@ export async function POST(req: Request) {
     }
 
     // Map frontend role to database role
-    let dbRole: Role = Role.USER; // Default
-    if (role === "AGENCY") {
-      dbRole = Role.OPERATOR;
-    }
+    const dbRole: Role = role === "OPERATOR" ? Role.OPERATOR : Role.USER;
 
-    if (dbRole === Role.USER && (!name || !surname || !cellphone)) {
+    if (dbRole === Role.USER && (!name || !surname)) {
       return NextResponse.json(
         { message: "Missing User data" },
         { status: 400 }
       );
     }
 
-    if (dbRole === Role.OPERATOR && (!name || !vatNumber || !telephone)) {
+    if (dbRole === Role.OPERATOR && (!name)) {
       return NextResponse.json(
         { message: "Missing Operator data" },
         { status: 400 }
@@ -61,8 +56,7 @@ export async function POST(req: Request) {
         role: dbRole,
         oauthProvider: OAuthProvider.APP,
         name: name,
-        surname: dbRole === Role.USER ? surname : undefined, // Only store surname for standard users if schema permits
-        cellphone: dbRole === Role.USER ? cellphone : undefined,
+        surname: dbRole === Role.USER ? surname : undefined,
       }
     });
 
@@ -70,10 +64,10 @@ export async function POST(req: Request) {
     if (dbRole === Role.OPERATOR) {
       await prisma.operator.create({
         data: {
-          user: { connect: { id: user.id } },
           organizationName: name, // Map 'name' from form to 'organizationName'
-          vatNumber,
-          telephone,
+          vatNumber: vatNumber || null,
+          telephone: "", // Workaround for stale Prisma Client types
+          user: { connect: { id: user.id } },
         }
       });
     }

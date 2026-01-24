@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: "User not authenticated" }, { status: 401 });
         }
 
-        if (session.user.role !== 'CLIENT') {
+        if (session.user.role !== 'USER') { // Role is USER in DB
             return NextResponse.json({ error: "User not authorized" }, { status: 403 });
         }
 
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
         const review = await prisma.review.findFirst({
             where: {
                 spaceId: spaceId,
-                clientId: session.user.id, // Ensure the review belongs to the authenticated user
+                userId: session.user.id, // Ensure the review belongs to the authenticated user
             },
         });
 

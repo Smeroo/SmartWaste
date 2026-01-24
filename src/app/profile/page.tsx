@@ -4,11 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faUser, 
-  faEnvelope, 
-  faCalendar, 
-  faSignOutAlt, 
+import {
+  faUser,
+  faEnvelope,
+  faCalendar,
+  faSignOutAlt,
   faLeaf,
   faMapMarkerAlt,
   faBell,
@@ -19,9 +19,11 @@ import Link from 'next/link';
 interface UserProfile {
   id: string;
   name: string;
+  surname?: string;
   email: string;
   role: string;
   createdAt: string;
+  cellphone?: string;
 }
 
 const ProfilePage = () => {
@@ -116,6 +118,17 @@ const ProfilePage = () => {
                 <div>
                   <p className="text-sm text-stone-500">Nome completo</p>
                   <p className="text-lg font-semibold text-stone-900">{profile.name}</p>
+                </div>
+              </div>
+
+              {/* Cognome */}
+              <div className="flex items-center gap-4 p-4 bg-white rounded-2xl">
+                <div className="bg-emerald-100 p-3 rounded-full">
+                  <FontAwesomeIcon icon={faUser} className="text-emerald-600 text-xl" />
+                </div>
+                <div>
+                  <p className="text-sm text-stone-500">Cognome</p>
+                  <p className="text-lg font-semibold text-stone-900">{profile.surname}</p>
                 </div>
               </div>
 

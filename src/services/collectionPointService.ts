@@ -7,9 +7,8 @@ import { Prisma } from '@prisma/client';
  */
 
 export interface CollectionPointFilters {
-  typology?: string;
-  maxPrice?: number;
   searchQuery?: string;
+  wasteType?: string;
 }
 
 export interface CreateCollectionPointData {
@@ -41,6 +40,7 @@ export interface CreateCollectionPointData {
   };
   accessibility?: string;
   capacity?: string;
+  images?: string[];
 }
 
 export interface UpdateCollectionPointData {
@@ -58,6 +58,19 @@ export interface UpdateCollectionPointData {
   wasteTypeIds?: number[];
   accessibility?: string;
   capacity?: string;
+  schedule?: {
+    monday?: boolean;
+    tuesday?: boolean;
+    wednesday?: boolean;
+    thursday?: boolean;
+    friday?: boolean;
+    saturday?: boolean;
+    sunday?: boolean;
+    openingTime?: string;
+    closingTime?: string;
+    notes?: string;
+    isAlwaysOpen?: boolean;
+  };
 }
 
 /**
@@ -68,26 +81,24 @@ export async function getCollectionPoints(filters?: CollectionPointFilters) {
     isActive: true,
   };
 
-  if (filters?.typology) {
-    where.typology = filters.typology;
-  }
-
-  if (filters?.maxPrice) {
-    where.price = {
-      lte: filters.maxPrice,
-    };
-  }
-
   if (filters?.searchQuery) {
-    const searchQuery = filters.searchQuery.toLowerCase();
+    const searchQuery = filters.searchQuery || "";
     where.OR = [
-      { name: { contains: searchQuery, mode: 'insensitive' } },
+      { name: { contains: searchQuery } },
       {
         address: {
-          city: { contains: searchQuery, mode: 'insensitive' },
+          city: { contains: searchQuery },
         },
       },
     ];
+  }
+
+  if (filters?.wasteType) {
+    where.wasteTypes = {
+      some: {
+        name: { contains: filters.wasteType }
+      }
+    };
   }
 
   return await prisma.collectionPoint.findMany({
@@ -133,6 +144,19 @@ export async function getCollectionPointById(id: number) {
           },
         },
       },
+      reviews: {
+        include: {
+          user: {
+            select: {
+              name: true,
+              surname: true
+            }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
+        }
+      }
     },
   });
 }
@@ -148,40 +172,41 @@ export async function createCollectionPoint(data: CreateCollectionPointData) {
       operatorId: data.operatorId,
       accessibility: data.accessibility,
       capacity: data.capacity,
+      images: data.images ? JSON.stringify(data.images) : undefined,
       address: data.address
         ? {
-            create: {
-              street: data.address.street,
-              number: data.address.number,
-              city: data.address.city,
-              zip: data.address.zip,
-              country: data.address.country || 'Italy',
-              latitude: data.address.latitude,
-              longitude: data.address.longitude,
-            },
-          }
+          create: {
+            street: data.address.street,
+            number: data.address.number,
+            city: data.address.city,
+            zip: data.address.zip,
+            country: data.address.country || 'Italy',
+            latitude: data.address.latitude,
+            longitude: data.address.longitude,
+          },
+        }
         : undefined,
       wasteTypes: data.wasteTypeIds
         ? {
-            connect: data.wasteTypeIds.map((id) => ({ id })),
-          }
+          connect: data.wasteTypeIds.map((id) => ({ id })),
+        }
         : undefined,
       schedule: data.schedule
         ? {
-            create: {
-              monday: data.schedule.monday || false,
-              tuesday: data.schedule.tuesday || false,
-              wednesday: data.schedule.wednesday || false,
-              thursday: data.schedule.thursday || false,
-              friday: data.schedule.friday || false,
-              saturday: data.schedule.saturday || false,
-              sunday: data.schedule.sunday || false,
-              openingTime: data.schedule.openingTime,
-              closingTime: data.schedule.closingTime,
-              notes: data.schedule.notes,
-              isAlwaysOpen: data.schedule.isAlwaysOpen || false,
-            },
-          }
+          create: {
+            monday: data.schedule.monday || false,
+            tuesday: data.schedule.tuesday || false,
+            wednesday: data.schedule.wednesday || false,
+            thursday: data.schedule.thursday || false,
+            friday: data.schedule.friday || false,
+            saturday: data.schedule.saturday || false,
+            sunday: data.schedule.sunday || false,
+            openingTime: data.schedule.openingTime,
+            closingTime: data.schedule.closingTime,
+            notes: data.schedule.notes,
+            isAlwaysOpen: data.schedule.isAlwaysOpen || false,
+          },
+        }
         : undefined,
     },
     include: {
@@ -241,6 +266,38 @@ export async function updateCollectionPoint(
           set: data.wasteTypeIds.map((id) => ({ id })),
         },
       }),
+      ...(data.schedule && {
+        schedule: {
+          upsert: {
+            create: {
+              monday: data.schedule.monday || false,
+              tuesday: data.schedule.tuesday || false,
+              wednesday: data.schedule.wednesday || false,
+              thursday: data.schedule.thursday || false,
+              friday: data.schedule.friday || false,
+              saturday: data.schedule.saturday || false,
+              sunday: data.schedule.sunday || false,
+              openingTime: data.schedule.openingTime,
+              closingTime: data.schedule.closingTime,
+              notes: data.schedule.notes,
+              isAlwaysOpen: data.schedule.isAlwaysOpen || false,
+            },
+            update: {
+              monday: data.schedule.monday,
+              tuesday: data.schedule.tuesday,
+              wednesday: data.schedule.wednesday,
+              thursday: data.schedule.thursday,
+              friday: data.schedule.friday,
+              saturday: data.schedule.saturday,
+              sunday: data.schedule.sunday,
+              openingTime: data.schedule.openingTime,
+              closingTime: data.schedule.closingTime,
+              notes: data.schedule.notes,
+              isAlwaysOpen: data.schedule.isAlwaysOpen,
+            }
+          }
+        }
+      })
     },
     include: {
       address: true,

@@ -20,6 +20,8 @@ export async function getUserProfile(email: string) {
     select: {
       id: true,
       name: true,
+      surname: true,
+      cellphone: true,
       email: true,
       role: true,
       createdAt: true,

@@ -11,6 +11,7 @@ const RegisterPage = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: '',
+    surname: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -26,9 +27,9 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validazione
-    if (!formData.name || !formData.email || !formData.password) {
+    if (!formData.name || !formData.surname || !formData.email || !formData.password) {
       toast.error('Compila tutti i campi');
       return;
     }
@@ -51,6 +52,7 @@ const RegisterPage = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.name,
+          surname: formData.surname,
           email: formData.email,
           password: formData.password,
           role: 'USER', // Sempre USER
@@ -91,8 +93,8 @@ const RegisterPage = () => {
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Nome */}
           <div className="relative">
-            <FontAwesomeIcon 
-              icon={faUser} 
+            <FontAwesomeIcon
+              icon={faUser}
               className="absolute left-4 top-1/2 transform -translate-y-1/2 text-stone-400"
             />
             <input
@@ -107,10 +109,28 @@ const RegisterPage = () => {
             />
           </div>
 
+          {/* Cognome */}
+          <div className="relative">
+            <FontAwesomeIcon
+              icon={faUser}
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 text-stone-400"
+            />
+            <input
+              type="text"
+              name="surname"
+              placeholder="Cognome completo"
+              value={formData.surname}
+              onChange={handleChange}
+              required
+              className="w-full pl-12 pr-4 py-3 rounded-2xl border-2 border-stone-300 
+                       focus:border-emerald-500 focus:outline-none transition text-stone-900"
+            />
+          </div>
+
           {/* Email */}
           <div className="relative">
-            <FontAwesomeIcon 
-              icon={faEnvelope} 
+            <FontAwesomeIcon
+              icon={faEnvelope}
               className="absolute left-4 top-1/2 transform -translate-y-1/2 text-stone-400"
             />
             <input
@@ -127,8 +147,8 @@ const RegisterPage = () => {
 
           {/* Password */}
           <div className="relative">
-            <FontAwesomeIcon 
-              icon={faLock} 
+            <FontAwesomeIcon
+              icon={faLock}
               className="absolute left-4 top-1/2 transform -translate-y-1/2 text-stone-400"
             />
             <input
@@ -146,8 +166,8 @@ const RegisterPage = () => {
 
           {/* Conferma Password */}
           <div className="relative">
-            <FontAwesomeIcon 
-              icon={faLock} 
+            <FontAwesomeIcon
+              icon={faLock}
               className="absolute left-4 top-1/2 transform -translate-y-1/2 text-stone-400"
             />
             <input
@@ -168,10 +188,10 @@ const RegisterPage = () => {
             disabled={loading}
             className={`w-full py-4 rounded-2xl font-bold text-lg text-white
                      transition-all duration-300 shadow-lg
-                     ${loading 
-                       ? 'bg-stone-400 cursor-not-allowed' 
-                       : 'bg-emerald-500 hover:bg-emerald-600 hover:scale-105 active:scale-95'
-                     }`}
+                     ${loading
+                ? 'bg-stone-400 cursor-not-allowed'
+                : 'bg-emerald-500 hover:bg-emerald-600 hover:scale-105 active:scale-95'
+              }`}
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">

@@ -5,8 +5,8 @@ import { NextResponse } from 'next/server';
 // Fetch all services
 export async function GET() {
   try {
-    // Fetch all services
-    const services = await prisma.service.findMany();
+    // Fetch all waste types
+    const services = await prisma.wasteType.findMany();
 
     return NextResponse.json(services);
   } catch (error) {

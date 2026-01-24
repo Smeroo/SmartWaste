@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { email },
-      include: { user: true, operator: true },
+      include: { operator: true },
     });
 
     if (!user) {
@@ -23,54 +23,70 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if the user already has a profile
-    if (user.user || user.operator) {
+    if (user.operator || (user.role === "USER" && user.name && user.surname)) {
       return NextResponse.json(
         { message: "Profile already completed." },
         { status: 400 }
       );
     }
 
-    if (role === "CLIENT") {
-      if (!rest.name || !rest.surname || !rest.cellphone) {
+    // Map role to DB enum (Direct mapping now)
+    // Map role to DB enum
+    const dbRole = role === "OPERATOR" ? "OPERATOR" : "USER";
+
+    if (dbRole === "USER") {
+      if (!rest.name || !rest.surname) {
         return NextResponse.json(
           { message: "Missing user fields." },
           { status: 400 }
         );
       }
-      await prisma.user.create({
+      // Update existing user with profile data
+      await prisma.user.update({
+        where: { email },
         data: {
           name: rest.name,
           surname: rest.surname,
-          cellphone: rest.cellphone,
-          user: { connect: { email } },
+          role: "USER"
         },
       });
-    } else if (role === "AGENCY") {
-      if (!rest.name || !rest.vatNumber || !rest.telephone) {
+    } else if (dbRole === "OPERATOR") {
+      if (!rest.name) {
         return NextResponse.json(
           { message: "Missing operator fields." },
           { status: 400 }
         );
       }
+
+      // Create operator profile linked to the user
+      const existingUser = await prisma.user.findUnique({ where: { email } });
+      if (!existingUser) return NextResponse.json({ message: "User not found" }, { status: 404 });
+
       await prisma.operator.create({
         data: {
-          name: rest.name,
-          vatNumber: rest.vatNumber,
-          telephone: rest.telephone,
-          user: { connect: { email } },
+          organizationName: rest.name, // Map name to organizationName
+          vatNumber: rest.vatNumber || null,
+          telephone: "", // Workaround for stale Prisma Client types
+          user: { connect: { id: existingUser.id } },
         },
+      });
+
+      // Update role on user
+      await prisma.user.update({
+        where: { email },
+        data: { role: "OPERATOR" },
       });
     }
 
-    // To update the user's role
+    // To update the user's role (redundant but safe)
     await prisma.user.update({
       where: { email },
-      data: { role },
+      data: { role: dbRole },
     });
 
     return NextResponse.json({
       success: true,
-      role,
+      role: dbRole,
       redirectTo: "/",
     });
   } catch (e) {

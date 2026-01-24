@@ -2,14 +2,14 @@ import { signIn } from "next-auth/react";
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { UseFormSetError } from "react-hook-form";
 
-// T represents the type of the form data (ClientFormValues, AgencyFormValues)
+// T represents the type of the form data (UserFormValues, OperatorFormValues)
 export async function handleFormSubmit<
   T extends Record<string, unknown>
 >(params: {
   data: T;
-  role: "CLIENT" | "AGENCY";
+  role: "USER" | "OPERATOR";
   useOAuth: boolean;
-  provider?: "google" | "github"; 
+  provider?: "google" | "github";
   setError: UseFormSetError<T>;
   router: AppRouterInstance; // router instance of Next.js, used for navigation and redirection
   emailFromProps?: string;

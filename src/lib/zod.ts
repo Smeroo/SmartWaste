@@ -9,12 +9,7 @@ const name = string().min(2, "Name is too short").max(50, "Name is too long");
 const surname = string()
   .min(2, "Surname is too short")
   .max(50, "Surname is too long");
-const cellphone = string()
-  .min(10, "Cellphone must be at least 10 digits")
-  .max(15, "Cellphone must be at most 15 digits");
-const telephone = string()
-  .min(10, "Telephone must be at least 10 digits")
-  .max(15, "Telephone must be at most 15 digits");
+
 const vatNumber = string().regex(
   /^[A-Z]{2}\d{11}$/,
   "VAT must be in the format AA12345678910"
@@ -26,21 +21,19 @@ export const signInSchema = object({
   password,
 });
 
-export const clientFields = {
+export const userFields = {
   name,
   surname,
-  cellphone,
 };
 
-export const agencyFields = {
+export const operatorFields = {
   name,
-  vatNumber,
-  telephone,
+  vatNumber: vatNumber.optional(),
 };
 
-export const clientRegisterSchema = signInSchema.extend(clientFields);
+export const userRegisterSchema = signInSchema.extend(userFields);
 
-export const agencyRegisterSchema = signInSchema.extend(agencyFields);
+export const operatorRegisterSchema = signInSchema.extend(operatorFields);
 
 // Sign in schema for OAuth providers (email and password are optional)
 const optionalSignInSchema = object({
@@ -48,8 +41,8 @@ const optionalSignInSchema = object({
   password: password.optional(),
 });
 
-export const clientRegisterSchemaOAuth =
-  optionalSignInSchema.extend(clientFields);
+export const userRegisterSchemaOAuth =
+  optionalSignInSchema.extend(userFields);
 
-export const agencyRegisterSchemaOAuth =
-  optionalSignInSchema.extend(agencyFields);
+export const operatorRegisterSchemaOAuth =
+  optionalSignInSchema.extend(operatorFields);

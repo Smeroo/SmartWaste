@@ -108,10 +108,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
             data: {
                 name: metadata.name,
                 description: metadata.description,
-                seats: parseInt(metadata.seats),
-                isFullSpaceBooking: metadata.typology === 'MEETING_ROOMS',
-                typology: metadata.typology,
-                price: parseFloat(metadata.price),
+                accessibility: metadata.accessibility,
+                capacity: metadata.capacity,
+                // Removed invalid fields: seats, isFullSpaceBooking, typology, price
 
                 // Include address update only if present
                 ...(nominatimAddress && {

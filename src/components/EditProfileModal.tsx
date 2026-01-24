@@ -16,10 +16,10 @@ const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void, userDat
         vatNumber?: string;
     }>({
         name: '',
-        surname: userRole === 'CLIENT' ? '' : undefined,
-        cellphone: userRole === 'CLIENT' ? '' : undefined,
-        telephone: userRole === 'AGENCY' ? '' : undefined,
-        vatNumber: userRole === 'AGENCY' ? '' : undefined,
+        surname: userRole === 'USER' ? '' : undefined,
+        cellphone: userRole === 'USER' ? '' : undefined,
+        telephone: userRole === 'OPERATOR' ? '' : undefined,
+        vatNumber: userRole === 'OPERATOR' ? '' : undefined,
     });
 
     // Error state for required fields
@@ -36,10 +36,10 @@ const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void, userDat
         setErrors({});
         setFormData({
             name: '',
-            surname: userRole === 'CLIENT' ? '' : undefined,
-            cellphone: userRole === 'CLIENT' ? '' : undefined,
-            telephone: userRole === 'AGENCY' ? '' : undefined,
-            vatNumber: userRole === 'AGENCY' ? '' : undefined,
+            surname: userRole === 'USER' ? '' : undefined,
+            cellphone: userRole === 'USER' ? '' : undefined,
+            telephone: userRole === 'OPERATOR' ? '' : undefined,
+            vatNumber: userRole === 'OPERATOR' ? '' : undefined,
         });
     }
 
@@ -49,9 +49,7 @@ const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void, userDat
         const newErrors: typeof errors = {};
         if (formData.name.trim() === '') newErrors.name = true;
         if (formData.surname?.trim() === '') newErrors.surname = true;
-        if (formData.cellphone?.trim() === '') newErrors.cellphone = true;
-        if (formData.telephone?.trim() === '') newErrors.telephone = true;
-        if (formData.vatNumber?.trim() === '') newErrors.vatNumber = true;
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -85,10 +83,10 @@ const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void, userDat
     const initializeFormData = () => {
         setFormData({
             name: userData.name || '',
-            surname: userRole === 'CLIENT' ? userData.surname || '' : undefined,
-            cellphone: userRole === 'CLIENT' ? userData.cellphone || '' : undefined,
-            telephone: userRole === 'AGENCY' ? userData.telephone || '' : undefined,
-            vatNumber: userRole === 'AGENCY' ? userData.vatNumber || '' : undefined,
+            surname: userRole === 'USER' ? userData.surname || '' : undefined,
+            cellphone: userRole === 'USER' ? userData.cellphone || '' : undefined,
+            telephone: userRole === 'OPERATOR' ? userData.telephone || '' : undefined,
+            vatNumber: userRole === 'OPERATOR' ? userData.vatNumber || '' : undefined,
         });
     };
 
@@ -151,8 +149,8 @@ const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void, userDat
                             />
                         </div>
 
-                        {/* Surname field for CLIENT role */}
-                        {userRole === 'CLIENT' && (
+                        {/* Surname field for USER role */}
+                        {userRole === 'USER' && (
                             <div className="w-full flex flex-col">
                                 <label className="flex items-center text-sm md:text-base font-medium pl-1 pb-1 text-stone-900">
                                     Surname
@@ -168,25 +166,25 @@ const EditProfileModal: React.FC<{ isOpen: boolean; onClose: () => void, userDat
                             </div>
                         )}
                     </div>
-                    {/* Cellphone for CLIENT, Telephone for AGENCY */}
+                    {/* Cellphone for USER, Telephone for OPERATOR */}
                     <div className="w-full flex flex-col">
                         <label className="flex items-center text-sm md:text-base font-medium pl-1 pb-1 text-stone-900">
-                            {userRole === 'CLIENT' ? 'Cellphone' : 'Telephone'}
-                            {userRole === 'CLIENT' ? errors.cellphone && errorDot : errors.telephone && errorDot}
+                            {userRole === 'USER' ? 'Cellphone' : 'Telephone'}
+                            {userRole === 'USER' ? errors.cellphone && errorDot : errors.telephone && errorDot}
                         </label>
                         <input
                             type="tel"
                             id="telephone"
-                            value={userRole === 'CLIENT' ? formData.cellphone : formData.telephone}
-                            onChange={(e) => setFormData({ ...formData, [userRole === 'CLIENT' ? 'cellphone' : 'telephone']: e.target.value })}
+                            value={userRole === 'USER' ? formData.cellphone : formData.telephone}
+                            onChange={(e) => setFormData({ ...formData, [userRole === 'USER' ? 'cellphone' : 'telephone']: e.target.value })}
                             required
                             pattern='[0-9\s]+'
                             className="p-2 border rounded-lg border-stone-300 focus:outline-none focus:ring-2 focus:ring-west-side-500 bg-stone-50"
                         />
                     </div>
 
-                    {/* VAT number for AGENCY role */}
-                    {userRole === 'AGENCY' && (
+                    {/* VAT number for OPERATOR role */}
+                    {userRole === 'OPERATOR' && (
                         <div className="w-full flex flex-col">
                             <label className="flex items-center text-sm md:text-base font-medium pl-1 pb-1 text-stone-900">
                                 VAT

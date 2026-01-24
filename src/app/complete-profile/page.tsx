@@ -1,7 +1,7 @@
 "use client";
 import { useSession } from "next-auth/react";
-import ClientForm from "@/components/ClientForm";
-import AgencyForm from "@/components/AgencyForm";
+import UserForm from "@/components/UserForm";
+import OperatorForm from "@/components/OperatorForm";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowLeft,
@@ -15,8 +15,8 @@ import { useState } from "react";
 export default function CompleteProfile() {
   // Get session and loading status from NextAuth
   const { data: session, status } = useSession();
-  // State for selected role (CLIENT or AGENCY)
-  const [role, setRole] = useState<"CLIENT" | "AGENCY" | "">("");
+  // State for selected role (USER or OPERATOR)
+  const [role, setRole] = useState<"USER" | "OPERATOR" | "">("");
 
   // Show loading spinner while session is loading
   if (status === "loading")
@@ -41,7 +41,7 @@ export default function CompleteProfile() {
           {!role ? (
             <div className="flex flex-col sm:flex-row gap-5">
               <button
-                onClick={() => setRole("CLIENT")}
+                onClick={() => setRole("USER")}
                 className="w-full font-medium h-10 sm:h-12 flex justify-center items-center rounded-lg border-2 border-stone-900 text-stone-900
                                 hover:border-west-side-500 hover:bg-west-side-500 hover:text-stone-100
                                 active:border-west-side-500 active:bg-west-side-500 active:text-stone-100
@@ -58,7 +58,7 @@ export default function CompleteProfile() {
                 />
               </button>
               <button
-                onClick={() => setRole("AGENCY")}
+                onClick={() => setRole("OPERATOR")}
                 className="w-full font-medium h-10 sm:h-12 flex justify-center items-center rounded-lg border-2 border-stone-900 text-stone-900
                             hover:border-west-side-500 hover:bg-west-side-500 hover:text-stone-100
                             active:border-west-side-500 active:bg-west-side-500 active:text-stone-100
@@ -87,24 +87,21 @@ export default function CompleteProfile() {
                 <FontAwesomeIcon icon={faArrowLeft} />
               </button>
               {/* Render the appropriate form based on selected role */}
-              {role === "CLIENT" ? (
-                <ClientForm
+              {role === "USER" ? (
+                <UserForm
                   email={session?.user?.email} // from OAuth session
                   requiredFields={{
                     name: true,
                     surname: true,
-                    cellphone: true,
                   }}
                   layout="col"
                   buttons="confirm"
                 />
               ) : (
-                <AgencyForm
+                <OperatorForm
                   email={session?.user?.email} // from OAuth session
                   requiredFields={{
                     name: true,
-                    vatNumber: true,
-                    telephone: true,
                   }}
                   layout="col"
                   buttons="confirm"

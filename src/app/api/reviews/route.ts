@@ -31,7 +31,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "User not authenticated" }, { status: 401 });
         }
 
-        if (session.user.role !== 'CLIENT') {
+        if (session.user.role !== 'USER') { // Role is USER in DB
             return NextResponse.json({ error: "User not authorized" }, { status: 403 });
         }
 

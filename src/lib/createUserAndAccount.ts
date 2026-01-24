@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 
 type OAuthProvider = "GOOGLE" | "GITHUB";
 
-type Role = "CLIENT" | "AGENCY";
+type Role = "USER" | "OPERATOR";
 
 interface CreateUserAndAccountParams {
   email: string;
@@ -15,14 +15,20 @@ export async function createUserAndAccount({
   email,
   provider,
   providerAccountId,
-  role = "CLIENT",
+  role = "USER",
 }: CreateUserAndAccountParams) {
+
+  // Map internal role to DB role
+  const dbRole = role;
+
   const user = await prisma.user.create({
     data: {
       email,
       oauthProvider: provider.toUpperCase() as OAuthProvider,
       oauthId: providerAccountId,
-      role, // Set the user role (CLIENT or AGENCY)
+      // @ts-ignore
+      role: dbRole,
+      name: "", // Required by schema
     },
   });
 
