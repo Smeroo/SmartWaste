@@ -57,5 +57,27 @@ SmartWaste è un'applicazione web e mobile che aiuta i cittadini a localizzare i
 ```
 SmartWaste/
 ├── prisma/
-│   ├── schema.prisma      # Database schema
-
+│   ├── schema.prisma       # Schema del Database
+│   └── seed.ts             # Script di popolamento iniziale
+├── public/                 # Asset statici (immagini, icone)
+├── src/
+│   ├── app/                # Next.js App Router
+│   │   ├── api/            # API Endpoints
+│   │   ├── collection-points/ # Punti di raccolta
+│   │   ├── login/          # Login
+│   │   ├── register/       # Registrazione
+│   │   ├── profile/        # Profilo utente
+│   │   ├── spaces/         # Gestione spazi
+│   │   ├── layout.tsx      # Layout principale
+│   │   └── page.tsx        # Homepage
+│   ├── components/         # Componenti React riutilizzabili
+│   ├── lib/                # Utility (db, auth, zed, ecc.)
+│   ├── services/           # Logica di business
+│   ├── types/              # Definizioni TypeScript
+│   ├── auth.ts             # Configurazione NextAuth
+│   └── middleware.ts       # Middleware di protezione
+├── .env                    # Variabili d'ambiente
+├── next.config.ts          # Configurazione Next.js
+├── package.json            # Dipendenze e script
+└── tsconfig.json           # Configurazione TypeScript
+```
