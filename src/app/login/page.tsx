@@ -37,13 +37,14 @@ export default function LoginPage() {
         <form action={credentialsAction} className="space-y-5">
           {/* Email */}
           <div>
-            <label className="block font-medium text-stone-700 mb-2">
+            <label htmlFor="email" className="block font-medium text-stone-700 mb-2">
               Email
             </label>
             <input
               type="email"
               id="email"
               name="email"
+              autoComplete="email"
               required
               className="w-full px-4 py-3 rounded-2xl border-2 border-stone-300 
                        focus:border-emerald-500 focus:outline-none transition text-stone-900"
@@ -53,7 +54,7 @@ export default function LoginPage() {
 
           {/* Password */}
           <div>
-            <label className="block font-medium text-stone-700 mb-2">
+            <label htmlFor="password" className="block font-medium text-stone-700 mb-2">
               Password
             </label>
             <div className="relative">
@@ -61,6 +62,7 @@ export default function LoginPage() {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
+                autoComplete="current-password"
                 required
                 className="w-full px-4 py-3 rounded-2xl border-2 border-stone-300 
                          focus:border-emerald-500 focus:outline-none transition text-stone-900 pr-12"

@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faMapMarkerAlt, 
-  faClock, 
+import {
+  faMapMarkerAlt,
+  faClock,
   faRecycle,
   faSearch,
   faFilter,
@@ -96,14 +96,14 @@ const CollectionPointsPage = () => {
         point.wasteTypes.some(type => {
           const upperName = type.name.toUpperCase();
           const upperFilter = selectedWasteType.toUpperCase();
-          
+
           if (upperFilter === 'PLASTICA') return upperName.includes('PLASTIC') || upperName.includes('PLASTICA');
           if (upperFilter === 'CARTA') return upperName.includes('PAPER') || upperName.includes('CARTA');
           if (upperFilter === 'VETRO') return upperName.includes('GLASS') || upperName.includes('VETRO');
           if (upperFilter === 'ORGANICO') return upperName.includes('ORGANIC') || upperName.includes('ORGANICO');
           if (upperFilter === 'METALLO') return upperName.includes('METAL') || upperName.includes('METALLO');
           if (upperFilter === 'RAEE') return upperName.includes('ELECTRON') || upperName.includes('RAEE');
-          
+
           return false;
         })
       );
@@ -115,7 +115,7 @@ const CollectionPointsPage = () => {
   // Get waste type color and translate to Italian
   const getWasteTypeColor = (name: string) => {
     const upperName = name.toUpperCase().trim();
-    
+
     // Plastica
     if (upperName.includes('PLASTIC') || upperName.includes('PLASTICA')) {
       return 'bg-yellow-100 text-yellow-700 border-2 border-yellow-400';
@@ -144,7 +144,7 @@ const CollectionPointsPage = () => {
     if (upperName.includes('UNSORTED') || upperName.includes('INDIFFERENZIATO') || upperName.includes('RESIDUAL')) {
       return 'bg-stone-200 text-stone-700 border-2 border-stone-400';
     }
-    
+
     // Default (grigio)
     return 'bg-gray-100 text-gray-700 border-2 border-gray-300';
   };
@@ -152,7 +152,7 @@ const CollectionPointsPage = () => {
   // Translate waste type name to Italian
   const translateWasteType = (name: string) => {
     const upperName = name.toUpperCase().trim();
-    
+
     if (upperName.includes('PLASTIC') || upperName.includes('PLASTICA')) return 'Plastica';
     if (upperName.includes('PAPER') || upperName.includes('CARTA')) return 'Carta';
     if (upperName.includes('GLASS') || upperName.includes('VETRO')) return 'Vetro';
@@ -160,7 +160,7 @@ const CollectionPointsPage = () => {
     if (upperName.includes('ORGANIC') || upperName.includes('ORGANICO')) return 'Organico';
     if (upperName.includes('ELECTRON') || upperName.includes('RAEE')) return 'RAEE';
     if (upperName.includes('UNSORTED') || upperName.includes('INDIFFERENZIATO')) return 'Indifferenziato';
-    
+
     return name; // Ritorna il nome originale se non trova corrispondenza
   };
 
@@ -168,7 +168,7 @@ const CollectionPointsPage = () => {
   const formatSchedule = (schedule?: Schedule) => {
     if (!schedule) return 'Orari non disponibili';
     if (schedule.isAlwaysOpen) return 'Sempre aperto';
-    
+
     const days = [];
     if (schedule.monday) days.push('Lun');
     if (schedule.tuesday) days.push('Mar');
@@ -202,12 +202,14 @@ const CollectionPointsPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Search Bar */}
           <div className="relative">
-            <FontAwesomeIcon 
-              icon={faSearch} 
+            <FontAwesomeIcon
+              icon={faSearch}
               className="absolute left-4 top-1/2 transform -translate-y-1/2 text-stone-400"
             />
             <input
               type="text"
+              id="search-collection-points"
+              name="search"
               placeholder="Cerca per città, via o nome..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -218,11 +220,13 @@ const CollectionPointsPage = () => {
 
           {/* Waste Type Filter */}
           <div className="relative">
-            <FontAwesomeIcon 
-              icon={faFilter} 
+            <FontAwesomeIcon
+              icon={faFilter}
               className="absolute left-4 top-1/2 transform -translate-y-1/2 text-stone-400"
             />
             <select
+              id="waste-type-filter"
+              name="waste-type"
               value={selectedWasteType}
               onChange={(e) => setSelectedWasteType(e.target.value)}
               className="w-full pl-12 pr-4 py-3 rounded-2xl border-2 border-stone-300 

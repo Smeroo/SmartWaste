@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faRecycle, 
-  faSearch, 
+import {
+  faRecycle,
+  faSearch,
   faTrash,
   faBoxOpen,
   faWineBottle,
@@ -191,12 +191,14 @@ const WasteGuidePage = () => {
       {/* Barra di Ricerca */}
       <div className="max-w-2xl mx-auto mb-12">
         <div className="relative">
-          <FontAwesomeIcon 
-            icon={faSearch} 
+          <FontAwesomeIcon
+            icon={faSearch}
             className="absolute left-5 top-1/2 transform -translate-y-1/2 text-stone-400 text-xl"
           />
           <input
             type="text"
+            id="waste-search"
+            name="waste-search"
             placeholder="Cerca un tipo di rifiuto... (es. bottiglia, carta, smartphone)"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -306,7 +308,7 @@ const WasteGuidePage = () => {
           {/* Suggerimento */}
           <div className="mt-6 bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4">
             <p className="text-emerald-900">
-              <strong>💡 Suggerimento:</strong> In caso di dubbio, consulta sempre le linee guida del tuo comune 
+              <strong>💡 Suggerimento:</strong> In caso di dubbio, consulta sempre le linee guida del tuo comune
               o porta il rifiuto in una stazione ecologica.
             </p>
           </div>

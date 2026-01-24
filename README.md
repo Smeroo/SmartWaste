@@ -67,7 +67,7 @@ SmartWaste/
 │   │   ├── login/          # Login
 │   │   ├── register/       # Registrazione
 │   │   ├── profile/        # Profilo utente
-│   │   ├── spaces/         # Gestione spazi
+│   │   ├── waste-guide/    # Guida ai rifiuti
 │   │   ├── layout.tsx      # Layout principale
 │   │   └── page.tsx        # Homepage
 │   ├── components/         # Componenti React riutilizzabili
