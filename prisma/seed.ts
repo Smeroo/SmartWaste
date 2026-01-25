@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("🌱 Inizio seeding del database...");
 
-  // Cancella dati esistenti (ordine importante!)
+  // Cancella dati esistenti
   await prisma.review.deleteMany();
   await prisma.report.deleteMany();
   await prisma.collectionSchedule.deleteMany();

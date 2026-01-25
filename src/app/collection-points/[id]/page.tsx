@@ -18,7 +18,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 
-// Riutilizza interfacce (interfacce dovrebbero idealmente essere in un file type condiviso)
+// Riutilizza interfacce
 interface Address {
     street: string;
     number?: string;
@@ -72,7 +72,7 @@ interface CollectionPoint {
     accessibility: string;
     capacity?: string;
     isActive: boolean;
-    images?: string; // Stringa JSON o array?
+    images?: string;
     operator?: Operator;
 }
 
@@ -151,10 +151,9 @@ const CollectionPointDetailsPage = () => {
 
     return (
         <div className="min-h-screen pb-20 bg-stone-50">
-            {/* Immagine Hero */}
+
             <div className="relative h-60 md:h-80 lg:h-96 w-full">
                 <div className="absolute inset-0 bg-stone-300">
-                    {/* Se avessimo un componente Image con src valido, lo useremmo. Per ora, uso placeholder colorato se non c'è immagine */}
                     {images.length > 0 ? (
                         <img src={heroImage} alt={point.name} className="w-full h-full object-cover" />
                     ) : (
@@ -195,7 +194,6 @@ const CollectionPointDetailsPage = () => {
                                 <div className="flex flex-wrap gap-3">
                                     {point.wasteTypes.map(type => (
                                         <div key={type.id} className={`border-2 rounded-xl p-3 flex items-center gap-3 ${getWasteTypeColor(type.name)} bg-opacity-50`}>
-                                            {/* Parsing FontAwesome per stringa icona sarebbe complesso senza mapping, salto icona per ora o uso generica */}
                                             <FontAwesomeIcon icon={faRecycle} />
                                             <div>
                                                 <span className="font-bold block">{translateWasteType(type.name)}</span>
