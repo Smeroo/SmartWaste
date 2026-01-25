@@ -7,10 +7,12 @@ async function main() {
   console.log("🌱 Inizio seeding del database...");
 
   // Cancella dati esistenti (ordine importante!)
+  await prisma.review.deleteMany();
   await prisma.report.deleteMany();
   await prisma.collectionSchedule.deleteMany();
   await prisma.address.deleteMany();
   await prisma.collectionPoint.deleteMany();
+  await prisma.wasteType.deleteMany();
   await prisma.operator.deleteMany();
   await prisma.user.deleteMany();
 
@@ -27,7 +29,6 @@ async function main() {
       password: hashedPassword,
       role: "USER",
       oauthProvider: "APP",
-      cellphone: "+39 333 1234567",
     },
   });
 
@@ -39,7 +40,6 @@ async function main() {
       password: hashedPassword,
       role: "USER",
       oauthProvider: "APP",
-      cellphone: "+39 333 9876543",
     },
   });
 
@@ -54,7 +54,6 @@ async function main() {
       password: hashedPassword,
       role: "OPERATOR",
       oauthProvider: "APP",
-      cellphone: "+39 06 1234567",
     },
   });
 
