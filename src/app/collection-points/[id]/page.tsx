@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faMapMarkerAlt,
@@ -11,7 +12,9 @@ import {
     faRecycle,
     faPhone,
     faEnvelope,
-    faInfoCircle
+    faInfoCircle,
+    faExclamationTriangle,
+    faEdit
 } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
 
@@ -76,6 +79,7 @@ interface CollectionPoint {
 const CollectionPointDetailsPage = () => {
     const { id } = useParams();
     const router = useRouter();
+    const { data: session } = useSession();
     const [point, setPoint] = useState<CollectionPoint | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -206,6 +210,30 @@ const CollectionPointDetailsPage = () => {
                                 <div>
                                     <h2 className="text-xl font-bold mb-3 text-stone-800">Accessibilità</h2>
                                     <p className="text-stone-600">♿ {point.accessibility}</p>
+                                </div>
+                            )}
+
+                            {session?.user?.role === 'USER' && (
+                                <div className="mt-4 pt-4 border-t border-stone-100">
+                                    <button
+                                        onClick={() => alert('Funzionalità di segnalazione in arrivo!')}
+                                        className="flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-700 rounded-xl hover:bg-amber-200 transition font-medium text-sm"
+                                    >
+                                        <FontAwesomeIcon icon={faExclamationTriangle} />
+                                        Segnala un problema
+                                    </button>
+                                </div>
+                            )}
+
+                            {session?.user?.role === 'OPERATOR' && (
+                                <div className="mt-4 pt-4 border-t border-stone-100">
+                                    <button
+                                        onClick={() => alert('Funzionalità di modifica in arrivo!')}
+                                        className="flex items-center gap-2 px-4 py-2 bg-sky-100 text-sky-700 rounded-xl hover:bg-sky-200 transition font-medium text-sm"
+                                    >
+                                        <FontAwesomeIcon icon={faEdit} />
+                                        Modifica Informazioni
+                                    </button>
                                 </div>
                             )}
                         </div>

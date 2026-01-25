@@ -217,7 +217,10 @@ const ProfilePage = () => {
                 <span className="font-medium">Guida Rifiuti</span>
               </Link>
 
-              <button className="flex items-center gap-3 p-4 bg-white rounded-2xl hover:bg-yellow-50 transition group w-full text-left">
+              <button
+                onClick={() => alert("Funzionalità di notifica in arrivo")}
+                className="flex items-center gap-3 p-4 bg-white rounded-2xl hover:bg-yellow-50 transition group w-full text-left"
+              >
                 <FontAwesomeIcon icon={faBell} className="text-yellow-500 text-xl group-hover:scale-110 transition" />
                 <span className="font-medium">Notifiche (0)</span>
               </button>
